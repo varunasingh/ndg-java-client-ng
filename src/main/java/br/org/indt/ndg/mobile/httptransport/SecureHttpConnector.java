@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.org.indt.ndg.mobile.httptransport;
 
 import java.io.DataInputStream;
@@ -19,6 +15,7 @@ import javax.microedition.io.HttpConnection;
  * @author pwielgolaski
  */
 public class SecureHttpConnector implements HttpConnection {
+
 
     private HttpConnection m_connection; //TODO remove
     private String m_url;
@@ -39,17 +36,25 @@ public class SecureHttpConnector implements HttpConnection {
     public static HttpConnection open(String url) throws IOException, AuthorizationException{
         return open(url, Connector.READ);
     }
-    
-    public static HttpConnection open(String url, int mode) throws IOException, AuthorizationException {        
+
+    public static HttpConnection open(String url, int mode) throws IOException, AuthorizationException {
         authenticate();
 
         HttpConnection conn = null;
-        conn = ( HttpConnection )Connector.open( url, mode );
+        conn = new SecureHttpConnector( url, mode );
         if(digestResponse != null){
             conn.setRequestProperty(AUTHORIZATION, digestResponse.getDigestHeader(conn));
         }
         return conn;
     }
+
+    private SecureHttpConnector(String url, int mode) throws IOException {
+        m_url = url;
+        m_mode = mode;
+        m_properties = new Hashtable();
+        m_connection = ( HttpConnection )Connector.open( m_url, m_mode );
+    }
+
 
     public static void authenticate() throws IOException, AuthorizationException{
         if(!logged){
@@ -128,51 +133,6 @@ public class SecureHttpConnector implements HttpConnection {
         return authorized;
     }
 
-//    private void checkIfAuthenticated() throws IOException {
-//        if (!m_checked) {
-//            m_checked = true;
-//
-//            HttpConnection testConnection = null;
-//            boolean useClonedConnection = false;
-//            if (m_connection.getRequestMethod().equals(HttpConnection.GET)) {
-//                testConnection = m_connection;
-//            } else if (m_connection.getRequestMethod().equals(HttpConnection.POST)) {
-//                testConnection = duplicateConnection( );
-//                useClonedConnection = true;
-//            } else {
-//                throw new UnsupportedEncodingException("HTTP Method is not supported by SecureHttpConnector");
-//            }
-//
-//            if (testConnection.getResponseCode() == HttpConnection.HTTP_UNAUTHORIZED) {
-//                // check type of authentication
-//                String header = testConnection.getHeaderField(WWW_AUTHENTICATE);
-//                String token = null;
-//                if (header.toLowerCase().startsWith(BASIC)) {
-//                     token =  "Basic " + BasicAuth.encode(m_user, m_password);
-//                } else if (header.toLowerCase().startsWith(DIGEST)) {
-//                    String args = header.substring(header.indexOf(' ') + 1);
-////                    token =  DigestAuthResponse.digestResponse(testConnection,args, m_user, m_password );//TODO
-//                }
-//
-//                if (useClonedConnection) {
-//                    testConnection.close();
-//                    setRequestProperty(AUTHORIZATION, token);
-//                } else {
-//                    // open new connection with copied properties plus authenticate token
-//                    HttpConnection tmpConnection = duplicateConnection();
-//                    m_connection.close();
-//                    m_connection = tmpConnection;
-//                    setRequestProperty(AUTHORIZATION, token);
-//                }
-//
-//            } else {
-//                if (useClonedConnection) {
-//                    testConnection.close();
-//                }
-//            }
-//        }
-//    }
-
     private  HttpConnection duplicateConnection() throws IOException {
         HttpConnection connection = ( HttpConnection )Connector.open( m_url, m_mode);
         connection.setRequestMethod(connection().getRequestMethod());
@@ -182,6 +142,7 @@ public class SecureHttpConnector implements HttpConnection {
             Object key = keys.nextElement();
             connection.setRequestProperty((String)key, (String)m_properties.get(key));
         }
+        connection.setRequestProperty(AUTHORIZATION, digestResponse.getDigestHeader(connection));
         return connection;
     }
 
@@ -197,100 +158,81 @@ public class SecureHttpConnector implements HttpConnection {
     // <editor-fold desc="The following methods cause the transition to the Connected state when the connection is in Setup state.">
 
     public int getHeaderFieldInt(String name, int def) throws IOException {
-//        checkIfAuthenticated();
         return connection().getHeaderFieldInt(name, def);
     }
 
     public int getResponseCode() throws IOException {
-//        checkIfAuthenticated();
+        if(connection().getResponseCode() == HttpConnection.HTTP_UNAUTHORIZED){
+            if(logged = tryLogin()){
+                try{
+                    m_connection.close();
+                }catch(IOException ex){}
+
+                m_connection = duplicateConnection();
+                return connection().getResponseCode();
+            }
+        }
         return connection().getResponseCode();
     }
 
     public String getHeaderField(int n) throws IOException {
-//        checkIfAuthenticated();
         return connection().getHeaderField(n);
     }
 
     public String getHeaderField(String name) throws IOException {
-//        checkIfAuthenticated();
         return connection().getHeaderField(name);
     }
 
     public String getHeaderFieldKey(int n) throws IOException {
-//        checkIfAuthenticated();
         return connection().getHeaderFieldKey(n);
     }
 
     public String getResponseMessage() throws IOException {
-//        checkIfAuthenticated();
         return connection().getResponseMessage();
     }
 
     public long getDate() throws IOException {
-//        checkIfAuthenticated();
         return connection().getDate();
     }
 
     public long getExpiration() throws IOException {
-//         checkIfAuthenticated();
         return connection().getExpiration();
     }
 
     public long getHeaderFieldDate(String name, long def) throws IOException {
-//        checkIfAuthenticated();
         return connection().getHeaderFieldDate(name, def);
     }
 
     public long getLastModified() throws IOException {
-//        checkIfAuthenticated();
         return connection().getLastModified();
     }
 
     public String getEncoding() {
-//        try {
-//            checkIfAuthenticated();
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
         return connection().getEncoding();
     }
 
     public String getType() {
-//        try {
-//            checkIfAuthenticated();
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
         return connection().getType();
     }
 
     public long getLength() {
-//        try {
-//            checkIfAuthenticated();
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
         return connection().getLength();
     }
 
     public DataInputStream openDataInputStream() throws IOException {
-//        checkIfAuthenticated();
         return connection().openDataInputStream();
     }
 
     public InputStream openInputStream() throws IOException {
-//        checkIfAuthenticated();
         return connection().openInputStream();
     }
 
 
     public DataOutputStream openDataOutputStream() throws IOException {
-//        checkIfAuthenticated();
         return connection().openDataOutputStream();
     }
 
     public OutputStream openOutputStream() throws IOException {
-//        checkIfAuthenticated();
         return connection().openOutputStream();
     }
     // </editor-fold>
