@@ -1,6 +1,5 @@
 package br.org.indt.ndg.lwuit.control;
 
-import br.org.indt.ndg.lwuit.ui.InterviewForm;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.multimedia.Camera;
@@ -28,9 +27,7 @@ public class BackPhotoFormCommand extends CommandControl{
 
     protected void doAction(Object parameter) {
         Camera.getInstance().stopCamera();
-        if (!AppMIDlet.getInstance().getCurrentCameraManager().showLastInterviewForm()) {
-            AppMIDlet.getInstance().setDisplayable(InterviewForm.class);
-        }
+        AppMIDlet.getInstance().getCurrentCameraManager().showLastInterviewForm();
     }
 
 }

@@ -44,20 +44,18 @@ public class SubmitServer {
         }
     }
 
-    public void submitResult(String resultFilename){
+    public void submitResult(String resultFilename, String surveyId){
         Vector resultsToSend = new Vector();
         resultsToSend.addElement(resultFilename);
-        send(resultsToSend);
+        send(resultsToSend, surveyId);
     }
 
-    public void submit( Vector resultFilenames ) {
-        send(resultFilenames);
+    public void submit( Vector resultFilenames, String surveyId ) {
+        send(resultFilenames, surveyId);
     }
 
-    private void send(Vector resultFilenames){
-        String surveyRoot = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
-        int surveyFormat = Utils.resolveSurveyFormatFromDirName(surveyRoot);
-        m_servletUrl = AppMIDlet.getInstance().getSettings().getStructure().getServerUrl(surveyFormat);
+    private void send(Vector resultFilenames, String surveyId){
+        m_servletUrl = AppMIDlet.getInstance().getSettings().getStructure().getServerUrl();
         Enumeration e = resultFilenames.elements();
         m_filesNotSent.removeAllElements();
         while ( e.hasMoreElements() && !m_canceled ) {
@@ -77,19 +75,11 @@ public class SubmitServer {
 
             byte[] response;
             try {
-                HttpPostRequest request = null;
-                switch (surveyFormat) {
-                    case Utils.NDG_FORMAT:
-                        boolean useCompression = AppMIDlet.getInstance().getSettings().getStructure().getServerCompression();
-                        request = new HttpNormalPostRequest( m_servletUrl, fileContents.getBytes(), useCompression );
-                        break;
-                    case Utils.OPEN_ROSA_FORMAT:
-                        request = new HttpMultipartPostRequest( m_servletUrl, new Hashtable(),
-                                INPUT_NAME_TAG, filename, "text/xml", fileContents.getBytes());
-                        break;
-                    default:
-                        throw new RuntimeException("Unspported Survey Format");
-                }
+                Hashtable params = new Hashtable();
+                params.put("surveyId", surveyId);
+                HttpPostRequest request =  new HttpMultipartPostRequest( m_servletUrl, params,
+                                INPUT_NAME_TAG, filename, "text/xml", fileContents.getBytes(), surveyId);
+
                 response = request.send();
 
                 int responseCode = response[0];

@@ -23,7 +23,7 @@ public class TestConnectionRunnable implements Runnable {
 
 
     private void testGPRS() {
-        String urlServlet = AppMIDlet.getInstance().getSettings().getStructure().getServerUrl(Utils.NDG_FORMAT);
+        String urlServlet = AppMIDlet.getInstance().getSettings().getStructure().getServerUrl();
         HttpConnection httpConn = null;
         try {
             httpConn = (HttpConnection) Connector.open(urlServlet);

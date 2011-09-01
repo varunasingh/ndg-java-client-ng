@@ -38,7 +38,7 @@ public class SendResultNowCommand extends CommandControl{
     protected void doAction(Object parameter) {
         boolean[] listFlags = (boolean[]) parameter;
         AppMIDlet.getInstance().getFileSystem().useResults(FileSystem.USE_NOT_SENT_RESULTS);
-        
+
         int size = listFlags.length;
         selectedFiles.removeAllElements();
         for (int i=0; i < size; i++)
@@ -46,7 +46,7 @@ public class SendResultNowCommand extends CommandControl{
             if (listFlags[i]) selectedFiles.addElement(AppMIDlet.getInstance().getFileSystem().getResultFilename(i));
         }
         if (selectedFiles.size() > 0) {  //only send if items are selected
-            SubmitResultRunnable srr = new SubmitResultRunnable( selectedFiles );
+            SubmitResultRunnable srr = new SubmitResultRunnable( selectedFiles, AppMIDlet.getInstance().getFileSystem().getCurrentSurveyId() );
             AppMIDlet.getInstance().setSubmitServer( new SubmitServer() );
             srr.setSubmitServer( AppMIDlet.getInstance().getSubmitServer() );
             AppMIDlet.getInstance().setDisplayable(StatusScreen.class);

@@ -40,39 +40,28 @@ public class SettingsStructure {
     private static final int DEFAULT_ENCRIPTION_CONFIGURED = 0;
     private static final String DEFAULT_LANGUAGE_NAME = "Default (English)";
     private static final String DEFAULT_LANGUAGE_LOCALE = "en-GB";
-
     private String server_normal_url;
     private String server_compress_url;
     private String localization_serving_url;
-    private String server_results_openrosa_url;
     private String receive_survey_url;
     private String update_check_url;
     private String register_imei_url;
     private String language_list_url;
     private boolean compress_state = DEFAULT_USE_COMPRESSION;
-
     private int splash_time = DEFAULT_SPLASH_TIME;
     private int isRegistered_flag = DEFAULT_IS_REGISTERED;
-
     private boolean gps_configured = DEFAULT_GPS;
     private boolean geoTagging_configured = DEFAULT_GEO_TAGGING;
-
     private int selectedResolution = DEFAULT_PHOTO_RESULUTION_ID;
     private int selectedStyle = DEFAULT_STYLE_ID;
-
     private boolean logSupport = DEFAULT_LOG_SUPPORT;
     private int dateFormatId = DEFAULT_DATE_FORMAT_ID;
-
     private int encryptionConfigured = DEFAULT_ENCRIPTION_CONFIGURED;
     private boolean encryption = DEFAULT_ENCRYPTION;
-
     private String language = DEFAULT_LANGUAGE_NAME;
     private String appVersion;
     private Language defaultLanguage = new Language(DEFAULT_LANGUAGE_NAME, DEFAULT_LANGUAGE_LOCALE);
-
     private Vector languages = new Vector();
-
-
 
     public SettingsStructure() {
         initializeDefaultRuntimeSettings();
@@ -84,9 +73,8 @@ public class SettingsStructure {
 
         server_normal_url = defaultServerUrl + defaultServlets[0] + defaultServlets[1];
         server_compress_url = defaultServerUrl + defaultServlets[0] + defaultServlets[1];
-        localization_serving_url = defaultServerUrl + defaultServlets[0] + defaultServlets[6];
-        language_list_url = defaultServerUrl + defaultServlets[0] + defaultServlets[7];
-        server_results_openrosa_url = defaultServerUrl + defaultServlets[0] + defaultServlets[5];
+        localization_serving_url = defaultServerUrl + defaultServlets[0] + defaultServlets[5];
+        language_list_url = defaultServerUrl + defaultServlets[0] + defaultServlets[6];
         receive_survey_url = defaultServerUrl + defaultServlets[0] + defaultServlets[2];
         update_check_url = defaultServerUrl + defaultServlets[0] + defaultServlets[3];
         register_imei_url = defaultServerUrl + defaultServlets[0] + defaultServlets[4];
@@ -113,13 +101,13 @@ public class SettingsStructure {
         setEncryption(DEFAULT_ENCRYPTION);
         setServerUrl_Compress(defaultServerUrl + defaultServlets[0] + defaultServlets[1]);
         setServerUrl_Normal(defaultServerUrl + defaultServlets[0] + defaultServlets[1]);
-        setServerUrl_ResultsOpenRosa(defaultServerUrl + defaultServlets[0] + defaultServlets[5]);
         setReceiveSurveyURL(defaultServerUrl + defaultServlets[0] + defaultServlets[2]);
         setUpdateCheckURL(defaultServerUrl + defaultServlets[0] + defaultServlets[3]);
         setRegisterIMEIUrl(defaultServerUrl + defaultServlets[0] + defaultServlets[4]);
-        setLocalizationServingURL(defaultServerUrl + defaultServlets[0] + defaultServlets[6]);
-        setLanguageListURL(defaultServerUrl + defaultServlets[0] + defaultServlets[7]);
+        setLocalizationServingURL(defaultServerUrl + defaultServlets[0] + defaultServlets[5]);
+        setLanguageListURL(defaultServerUrl + defaultServlets[0] + defaultServlets[6]);
         setAppVersion(AppMIDlet.getInstance().getAppVersion());
+        languages.addElement(defaultLanguage);
 
         saveSettings(_out);
     }
@@ -149,12 +137,14 @@ public class SettingsStructure {
 
     public void writeServerSettings(PrintStream _out) {
         _out.print("<server compression=\"");
-        if (compress_state) _out.println("on\">");
-        else _out.println("off\">");
+        if (compress_state) {
+            _out.println("on\">");
+        } else {
+            _out.println("off\">");
+        }
 
         _out.println("<url_compress>" + server_compress_url + "</url_compress>");
         _out.println("<url_normal>" + server_normal_url + "</url_normal>");
-        _out.println("<url_results_openrosa>" + server_results_openrosa_url + "</url_results_openrosa>");
         _out.println("<url_receive_survey>" + receive_survey_url + "</url_receive_survey>");
         _out.println("<url_update_check>" + update_check_url + "</url_update_check>");
         _out.println("<url_register_imei>" + register_imei_url + "</url_register_imei>");
@@ -165,7 +155,7 @@ public class SettingsStructure {
     }
 
     private void writeLanguageSettings(PrintStream _out) throws UnsupportedEncodingException {
-        
+
         if(languages != null)
         {
             _out.println("<languages>");
@@ -180,19 +170,25 @@ public class SettingsStructure {
             }
             _out.println("</languages>");
         }
-        
+
     }
 
     public void writeGpsSettings(PrintStream _out) {
         _out.print("<gps configured=\"");
-        if (gps_configured) _out.println("yes\"/>");
-        else _out.println("no\"/>");
+        if (gps_configured) {
+            _out.println("yes\"/>");
+        } else {
+            _out.println("no\"/>");
+        }
     }
 
     public void writeGeoTaggingSettings(PrintStream _out) {
         _out.print("<geotagging configured=\"");
-        if (geoTagging_configured) _out.println("yes\"/>");
-        else _out.println("no\"/>");
+        if (geoTagging_configured) {
+            _out.println("yes\"/>");
+        } else {
+            _out.println("no\"/>");
+        }
     }
 
     void writeLogSettings(PrintStream _out) {
@@ -224,8 +220,11 @@ public class SettingsStructure {
 
     public void writeEncryption(PrintStream _out) {
         _out.print("<encryption enabled=\"");
-        if (encryption) _out.println("yes\"/>");
-        else _out.println("no\"/>");
+        if (encryption) {
+            _out.println("yes\"/>");
+        } else {
+            _out.println("no\"/>");
+        }
     }
 
     void setLogSupport(boolean _logSupport) {
@@ -273,10 +272,6 @@ public class SettingsStructure {
         server_normal_url = _url;
     }
 
-    public void setServerUrl_ResultsOpenRosa(String _url) {
-        server_results_openrosa_url = _url;
-    }
-
     public String getDateFormatString(){
         //TODO format to string;
        return "0";
@@ -290,20 +285,12 @@ public class SettingsStructure {
         dateFormatId = _id;
     }
 
-    public String getServerUrl( int surveyFormat ) {
+    public String getServerUrl() {
         String result = null;
-        switch (surveyFormat) {
-            case Utils.NDG_FORMAT:
-                if ( compress_state )
-                    result = server_compress_url;
-                else
-                    result = server_normal_url;
-                break;
-            case Utils.OPEN_ROSA_FORMAT:
-                result = server_results_openrosa_url;
-                break;
-            default:
-                throw new RuntimeException("Unsupported Survey Format");
+        if (compress_state) {
+            result = server_compress_url;
+        } else {
+            result = server_normal_url;
         }
         return result;
     }
@@ -316,22 +303,19 @@ public class SettingsStructure {
         return receive_survey_url;
     }
 
-    public String getLocalizationServingURL()
-    {
+    public String getLocalizationServingURL() {
         return localization_serving_url;
     }
 
-    public void setLocalizationServingURL(String url){
+    public void setLocalizationServingURL(String url) {
         localization_serving_url = url;
     }
 
-    public String getLanguageListURL()
-    {
+    public String getLanguageListURL() {
         return language_list_url;
     }
 
-    public void setLanguageListURL(String url)
-    {
+    public void setLanguageListURL(String url) {
         language_list_url = url;
     }
 

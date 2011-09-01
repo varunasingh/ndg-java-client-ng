@@ -22,7 +22,7 @@ public class SendResultCommand extends CommandControl {
 
     protected void doAction(Object parameter) {
         AppMIDlet.getInstance().getFileSystem().useResults(FileSystem.USE_NOT_SENT_RESULTS);
-        SubmitResultRunnable srr = new SubmitResultRunnable(AppMIDlet.getInstance().getFileSystem().getResultFilename());
+        SubmitResultRunnable srr = new SubmitResultRunnable(AppMIDlet.getInstance().getFileSystem().getResultFilename(),AppMIDlet.getInstance().getFileSystem().getCurrentSurveyId());
         AppMIDlet.getInstance().setSubmitServer( new SubmitServer() );
         srr.setSubmitServer( AppMIDlet.getInstance().getSubmitServer() );
         AppMIDlet.getInstance().setDisplayable(StatusScreen.class );

@@ -10,8 +10,6 @@ import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.lwuit.ui.WaitingScreen;
 import br.org.indt.ndg.mobile.ResultList;
 import com.sun.lwuit.Command;
-import com.sun.lwuit.animations.CommonTransitions;
-import com.sun.lwuit.plaf.UIManager;
 
 /**
  *

@@ -26,7 +26,6 @@ public class BackResultViewCommand extends BackCommand {
             ViewSentResultsCommand.getInstance().registerToBeExecutedAsBackCommand();
             ViewSentResultsCommand.getInstance().execute(null);
         } else { // default
-            AppMIDlet.getInstance().getFileStores().resetQuestions();
             AppMIDlet.getInstance().getFileStores().resetResultStructure();
             AppMIDlet.getInstance().setResultList( new ResultList());
             AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.ResultList.class);

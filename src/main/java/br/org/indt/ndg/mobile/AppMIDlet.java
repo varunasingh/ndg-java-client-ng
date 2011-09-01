@@ -1,10 +1,10 @@
 package br.org.indt.ndg.mobile;
 
 import br.org.indt.ndg.lwuit.control.SurveysControl;
+import br.org.indt.ndg.lwuit.ui.LoginForm;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
 import br.org.indt.ndg.lwuit.ui.OpenRosaInterviewForm;
 import br.org.indt.ndg.lwuit.ui.NDGLookAndFeel;
-import br.org.indt.ndg.lwuit.ui.RegisterIMEI;
 import br.org.indt.ndg.lwuit.ui.Screen;
 import java.io.IOException;
 import javax.microedition.midlet.MIDlet;
@@ -16,7 +16,7 @@ import br.org.indt.ndg.mobile.logging.Logger;
 import br.org.indt.ndg.lwuit.ui.SplashScreen;
 import br.org.indt.ndg.lwuit.ui.camera.ICameraManager;
 import br.org.indt.ndg.lwuit.ui.style.StyleConst;
-import br.org.indt.ndg.mobile.settings.IMEIHandler;
+import br.org.indt.ndg.mobile.httptransport.SecureHttpConnector;
 import br.org.indt.ndg.mobile.submit.SubmitServer;
 import com.sun.lwuit.Display;
 import com.sun.lwuit.TextField;
@@ -93,14 +93,16 @@ public class AppMIDlet extends MIDlet {
         Localization.initLocalizationSupport();
         resources = new Resources();
         locationHandler = new LocationHandler();
-        
+
         initLWUIT();
 
         setIMEI();
 
         fileSystem = new FileSystem(AppMIDlet.getInstance().getRootDir());
         fileStores = new FileStores();
-        registerApp();
+        showLoginScreen(); //TODO
+        SecureHttpConnector.setCredentials("admin", "ndg"); //TODO move this
+
     }
 
     public void initLWUIT() {
@@ -192,14 +194,9 @@ public class AppMIDlet extends MIDlet {
         return fontRes;
     }
 
-    public void registerApp() {
-        // check if application is registered
-        IMEIHandler im = new IMEIHandler();
-        if(!im.isIMEIRegistered()){
-            Screen.show(RegisterIMEI.class,true);
-        } else {
-            showEncryptionScreen();
-        }
+
+    public void showLoginScreen(){
+        setDisplayable( LoginForm.class );
     }
 
     public void showEncryptionScreen() {
@@ -226,7 +223,7 @@ public class AppMIDlet extends MIDlet {
         setSurveyList(new SurveyList());
 
         //check for errors first before loading spash screen
-        if (!fileSystem.getError() && !resources.getError() && !fileStores.getErrorkParser()) {
+        if (!fileSystem.getError() && !resources.getError() ) {//&& !fileStores.getErrorkParser()
 
             setDisplayable( br.org.indt.ndg.lwuit.ui.SurveyList.class);
         }
@@ -237,13 +234,7 @@ public class AppMIDlet extends MIDlet {
     }
 
     public void showInterview() {
-        String dirName = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
-        if ( Utils.isNdgDir(dirName) ) {
-            SurveysControl.getInstance().setSurveyChanged(false);
-            AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.CategoryList.class);
-        } else if ( Utils.isXformDir(dirName) ) {
-            AppMIDlet.getInstance().setDisplayable(OpenRosaInterviewForm.class);
-        }
+        AppMIDlet.getInstance().setDisplayable(OpenRosaInterviewForm.class);
     }
 
 
@@ -294,10 +285,9 @@ public class AppMIDlet extends MIDlet {
         return new String[] {
             getAppProperty("server-servlet_Context"),
             getAppProperty("server-servlet_PostResults"),
-            getAppProperty("server-servlet_ReceiveSurveys"),
+            getAppProperty("server-servlet_ReceiveSurvey"),
             getAppProperty("server-servlet_CheckForUpdate"),
             getAppProperty("server-servlet_RegisterIMEI"),
-            getAppProperty("server-servlet_PostResultsOpenRosa"),
             getAppProperty("server-servlet_Localization"),
             getAppProperty("server-servlet_LanguageList")
         };

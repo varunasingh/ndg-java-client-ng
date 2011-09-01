@@ -126,7 +126,6 @@ public class SettingsHandler extends DefaultHandler {
             else if (qName.equals("url_receive_survey")) structure.setReceiveSurveyURL(chars);
             else if (qName.equals("url_update_check")) structure.setUpdateCheckURL(chars);
             else if (qName.equals("url_register_imei")) structure.setRegisterIMEIUrl(chars);
-            else if (qName.equals("url_results_openrosa")) structure.setServerUrl_ResultsOpenRosa(chars);
          }
     }
 

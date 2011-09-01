@@ -53,33 +53,17 @@ public class OpenSurveyCommand extends CommandControl {
 
             System.out.println("Name: "+ AppMIDlet.getInstance().getRootDir() + AppMIDlet.getInstance().getFileSystem().getSurveyDirName() + NdgConsts.SURVEY_NAME);
 
-            boolean isValidSurvey = true;
             try {
-                if (isValidSurvey) {
-                    AppMIDlet.getInstance().getFileStores().parseSurveyFile();
-                    if (AppMIDlet.getInstance().getFileStores().getErrorkParser()){
-                          GeneralAlert.getInstance().addCommand( ExitCommand.getInstance());
-                          GeneralAlert.getInstance().show(Resources.ERROR_TITLE, Resources.EPARSE_SURVEY, GeneralAlert.ERROR );
-                    }
-                    else {
-                        AppMIDlet.getInstance().getFileSystem().loadResultFiles();
-                        if (!AppMIDlet.getInstance().getFileSystem().getError()) {
-                            AppMIDlet.getInstance().getFileSystem().setResultListIndex(0);
-                            AppMIDlet.getInstance().setResultList(new ResultList());
-                            AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.ResultList.class);
-                        } else {
-                            AppMIDlet.getInstance().getFileSystem().setError(false);
-                            GeneralAlert.getInstance().addCommand( ExitCommand.getInstance());
-                            GeneralAlert.getInstance().show(Resources.ERROR_TITLE, Resources.EPARSE_RESULT, GeneralAlert.ERROR );
-                        }
-                    }
-                }
-                else {
-
-                    GeneralAlert.getInstance().addCommand( GeneralAlert.DIALOG_OK, true);
-                    GeneralAlert.getInstance().show(Resources.ERROR_TITLE ,Resources.EINVALID_SURVEY, GeneralAlert.ERROR);
-                    AppMIDlet.getInstance().setSurveyList(new SurveyList());
-                    AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.SurveyList.class);
+                AppMIDlet.getInstance().getFileStores().createSurveyStructure();
+                AppMIDlet.getInstance().getFileSystem().loadResultFiles();
+                if (!AppMIDlet.getInstance().getFileSystem().getError()) {
+                    AppMIDlet.getInstance().getFileSystem().setResultListIndex(0);
+                    AppMIDlet.getInstance().setResultList(new ResultList());
+                    AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.ResultList.class);
+                } else {
+                    AppMIDlet.getInstance().getFileSystem().setError(false);
+                    GeneralAlert.getInstance().addCommand( ExitCommand.getInstance());
+                    GeneralAlert.getInstance().show(Resources.ERROR_TITLE, Resources.EPARSE_RESULT, GeneralAlert.ERROR );
                 }
             } catch (Exception e) {
                 e.printStackTrace();

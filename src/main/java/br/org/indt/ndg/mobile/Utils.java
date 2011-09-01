@@ -13,28 +13,6 @@ import javax.microedition.media.Player;
 
 public class Utils {
 
-    public static final int INVALID_FORMAT = 0;
-    public static final int NDG_FORMAT = 1;
-    public static final int OPEN_ROSA_FORMAT = 2;
-
-    public static int resolveSurveyFormatFromDirName( String dirName ) {
-        int result = INVALID_FORMAT;
-        if ( Utils.isNdgDir(dirName) ) {
-            result = NDG_FORMAT;
-        } else if (  dirName.startsWith("xforms")) {
-            result = OPEN_ROSA_FORMAT;
-        }
-        return result;
-    }
-
-    public static boolean isNdgDir(String surveyDirName){
-        if ( surveyDirName.substring(0, 6).equalsIgnoreCase(NdgConsts.SURVEY) ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
     public static boolean isXformDir(String surveyDirName){
         if ( surveyDirName.substring(0, 5).equalsIgnoreCase(NdgConsts.XFORM) ) {
             return true;

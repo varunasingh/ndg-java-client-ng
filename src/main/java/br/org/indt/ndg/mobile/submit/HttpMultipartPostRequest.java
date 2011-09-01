@@ -31,7 +31,7 @@ public class HttpMultipartPostRequest implements HttpPostRequest {
      * @throws IOException
      */
     public HttpMultipartPostRequest(String url, Hashtable params, String fileField,
-            String fileName, String fileType, byte[] fileBytes) throws IOException {
+            String fileName, String fileType, byte[] fileBytes, String surveyId) throws IOException {
         m_postUrl = url;
         String boundary = getBoundaryString();
         String boundaryMessage = getBoundaryMessage(boundary, params, fileField, fileName, fileType);

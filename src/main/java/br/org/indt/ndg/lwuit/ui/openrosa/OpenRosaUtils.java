@@ -41,13 +41,56 @@ public class OpenRosaUtils {
     public static String getStringFromDate(Date date){
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
+        return getDateStringFromCalendar(calendar);
 
+    }
+
+    public static String getIsoTimestampString(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+        int minutes = calendar.get(Calendar.MINUTE);
+        int seconds = calendar.get(Calendar.SECOND);
+
+        StringBuffer dateString = new StringBuffer(getDateStringFromCalendar(calendar));
+        dateString.append("T");//Iso character to separate date from time
+        dateString.append(intToString(hours, 2));
+        dateString.append(":");
+        dateString.append(intToString(minutes, 2));
+        dateString.append(":");
+        dateString.append(intToString(seconds, 2));
+        dateString.append("Z"); // indicates UTC timezone //todo read timezone from settings/locale
+
+        return dateString.toString();
+    }
+
+     private static String getDateStringFromCalendar(Calendar calendar)
+    {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        return String.valueOf(year)+ "-" + String.valueOf(month)+ "-" + String.valueOf(day);
+        StringBuffer dateBuilder = new StringBuffer();
+        dateBuilder.append(intToString(year, 4));
+        dateBuilder.append("-");
+        dateBuilder.append(intToString(month, 2));
+        dateBuilder.append("-");
+        dateBuilder.append(intToString(day, 2));
+
+        return dateBuilder.toString();
     }
+
+
+    private static String intToString(int num, int digitsNumber) {
+    String baseNumber = String.valueOf(num);
+    StringBuffer retval = new StringBuffer(baseNumber);
+    for(int i = 0 ; i <  digitsNumber - baseNumber.length(); i++)
+    {
+        retval.insert(0, "0");
+    }
+    return retval.toString();
+}
 
     /**
      *

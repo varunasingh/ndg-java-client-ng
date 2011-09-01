@@ -10,22 +10,25 @@ import java.util.Vector;
  *
  */
 public class SubmitResultRunnable implements Runnable{
-    
+
     private Vector resultFileNameList;
     private SubmitServer submitServer;
-    
+    private final String surveyId;
+
     /**
-     * 
+     *
      * @param resultFileName. Must be null if results come from ResultList.
      * Otherwise, must have the result's name to be sent
      */
-    public SubmitResultRunnable(String resultFileName){
+    public SubmitResultRunnable(String resultFileName, String surveyId){
         this.resultFileNameList = new Vector();
         resultFileNameList.addElement( resultFileName );
+        this.surveyId = surveyId;
     }
 
-    public SubmitResultRunnable( Vector resultFileNameList){
+    public SubmitResultRunnable( Vector resultFileNameList, String surveyId){
         this.resultFileNameList = resultFileNameList;
+        this.surveyId = surveyId;
     }
 
     public void setSubmitServer( SubmitServer submitServer)
@@ -34,6 +37,6 @@ public class SubmitResultRunnable implements Runnable{
     }
 
     public void run () {
-        submitServer.submit(resultFileNameList);
+        submitServer.submit(resultFileNameList, surveyId);
     }
 }

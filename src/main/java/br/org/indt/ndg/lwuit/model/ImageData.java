@@ -2,7 +2,6 @@ package br.org.indt.ndg.lwuit.model;
 
 import br.org.indt.ndg.lwuit.ui.Screen;
 import br.org.indt.ndg.mobile.AppMIDlet;
-import br.org.indt.ndg.mobile.NdgConsts;
 import br.org.indt.ndg.mobile.error.OutOfMemoryErrorExtended;
 import br.org.indt.ndg.mobile.logging.Logger;
 import com.sun.lwuit.Image;

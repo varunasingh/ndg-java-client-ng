@@ -1,5 +1,4 @@
 package br.org.indt.ndg.lwuit.control;
-import br.org.indt.ndg.lwuit.ui.InterviewForm;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.Resources;
 import com.sun.lwuit.Command;
@@ -19,9 +18,7 @@ public class CancelPickPhotoFormCommand extends BackCommand {
     }
 
     protected void doAction(Object parameter) {
-        if (!AppMIDlet.getInstance().getCurrentCameraManager().showLastInterviewForm()) {
-            AppMIDlet.getInstance().setDisplayable(InterviewForm.class);
-        }
+        AppMIDlet.getInstance().getCurrentCameraManager().showLastInterviewForm();
     }
 
 }

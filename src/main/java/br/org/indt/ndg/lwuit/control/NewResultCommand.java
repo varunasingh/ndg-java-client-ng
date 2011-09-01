@@ -37,13 +37,11 @@ public class NewResultCommand extends CommandControl {
         public void run() {
             try {
                 try { Thread.sleep(200); } catch(Exception e){}
-                AppMIDlet.getInstance().getFileStores().resetQuestions();
+
                 AppMIDlet.getInstance().getFileSystem().useResults(FileSystem.USE_NOT_SENT_RESULTS);
                 AppMIDlet.getInstance().getFileSystem().setLocalFile(false);
                 AppMIDlet.getInstance().getFileStores().resetResultStructure();
 
-                SurveysControl.getInstance().reset();
-                SurveysControl.getInstance().prepareEmptyResults();
                 AppMIDlet.getInstance().setTimeTracker((new Date()).getTime());  //to keep track of time used to create new survey
                 AppMIDlet.getInstance().showInterview();
             } catch (Exception e) {

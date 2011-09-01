@@ -19,6 +19,7 @@ import com.sun.lwuit.events.ActionEvent;
 import com.sun.lwuit.events.ActionListener;
 import com.sun.lwuit.layouts.BoxLayout;
 import com.sun.lwuit.plaf.Border;
+import java.util.Date;
 
 /**
  *
@@ -32,8 +33,10 @@ public class OpenRosaInterviewForm extends OpenRosaScreen implements UserInterfa
 
     private String title1;
     private String title2;
+    private Date startDate;
 
     public OpenRosaInterviewForm() {
+        startDate = new Date();
     }
 
     protected void loadData() {
@@ -99,6 +102,7 @@ public class OpenRosaInterviewForm extends OpenRosaScreen implements UserInterfa
     private void saveInterview(){
         if (widgetFactory.commitValues()) {
             OpenRosaInterviewSaveCommand.getInstance().setObserver(this);
+            OpenRosaInterviewSaveCommand.getInstance().setStartDate(startDate);
             OpenRosaInterviewSaveCommand.getInstance().execute(getXFormsDocument());
         }
     }
