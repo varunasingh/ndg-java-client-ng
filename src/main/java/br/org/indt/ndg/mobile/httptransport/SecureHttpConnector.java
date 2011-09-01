@@ -36,11 +36,11 @@ public class SecureHttpConnector implements HttpConnection {
     private static final String AUTHORIZATION = "Authorization";
     private static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
-    public static HttpConnection open(String url) throws IOException, AuthenticationFailException {
+    public static HttpConnection open(String url) throws IOException, AuthorizationException{
         return open(url, Connector.READ);
     }
-
-    public static HttpConnection open(String url, int mode) throws IOException {
+    
+    public static HttpConnection open(String url, int mode) throws IOException, AuthorizationException {        
         authenticate();
 
         HttpConnection conn = null;
@@ -51,11 +51,11 @@ public class SecureHttpConnector implements HttpConnection {
         return conn;
     }
 
-    public static void authenticate() throws IOException{
+    public static void authenticate() throws IOException, AuthorizationException{
         if(!logged){
             logged = tryLogin();
             if(!logged){
-                throw new SecurityException();
+                throw new AuthorizationException();
             }
         }
     }
