@@ -2,7 +2,6 @@ package br.org.indt.ndg.lwuit.extended;
 
 import br.org.indt.ndg.lwuit.ui.NDGLookAndFeel;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
-import br.org.indt.ndg.mobile.logging.Logger;
 import com.sun.lwuit.Component;
 import com.sun.lwuit.Graphics;
 import com.sun.lwuit.Image;

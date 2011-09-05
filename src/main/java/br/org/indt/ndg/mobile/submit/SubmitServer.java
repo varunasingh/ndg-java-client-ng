@@ -16,8 +16,11 @@ import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.ResultList;
 import br.org.indt.ndg.mobile.SurveyList;
 import br.org.indt.ndg.mobile.Utils;
+import br.org.indt.ndg.mobile.httptransport.AuthorizationException;
+import br.org.indt.ndg.mobile.httptransport.SecureHttpConnector;
 import br.org.indt.ndg.mobile.logging.Logger;
 import java.util.Hashtable;
+import javax.microedition.io.HttpConnection;
 
 public class SubmitServer {
     //These values are set in Settings.xml
@@ -29,7 +32,7 @@ public class SubmitServer {
 
     private boolean m_canceled = false;
     private String m_servletUrl = "";
-    private HttpPostRequest m_currentRequest = null;
+    private HttpMultipartPostRequest m_currentRequest = null;
     private final Vector m_filesNotSent = new Vector();
 
     public SubmitServer() {
@@ -73,25 +76,41 @@ public class SubmitServer {
                 continue;
             }
 
-            byte[] response;
             try {
                 Hashtable params = new Hashtable();
                 params.put("surveyId", surveyId);
-                HttpPostRequest request =  new HttpMultipartPostRequest( m_servletUrl, params,
+                HttpMultipartPostRequest request =  new HttpMultipartPostRequest( m_servletUrl, params,
                                 INPUT_NAME_TAG, filename, "text/xml", fileContents.getBytes(), surveyId);
 
-                response = request.send();
+                int responseCode = request.send();
 
-                int responseCode = response[0];
-                processResult(filename, responseCode);
+                if(responseCode == HttpConnection.HTTP_OK){
+                    AppMIDlet.getInstance().getFileSystem().moveSentResult(filename);
+                }else if(responseCode == HttpConnection.HTTP_UNAUTHORIZED){
+                    GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+                    GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " Try login again", GeneralAlert.ERROR);//TODO localize
+                    SecureHttpConnector.setAuthenticationFail();
+                    AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.LoginForm.class);
+                    return;
+                }else {
+                    m_filesNotSent.addElement(filename);
+                    GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+                    GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, String.valueOf(responseCode), GeneralAlert.ERROR);
+                }
+
             } catch (IOException ioe) {
                 if (!m_canceled){
+                    m_filesNotSent.addElement(filename);
                     GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-                    GeneralAlert.getInstance().showCodedAlert( Resources.NETWORK_FAILURE,
-                                                               ioe.getMessage() != null ? ioe.getMessage().trim() : "",
-                                                               GeneralAlert.ALARM );
+                    GeneralAlert.getInstance().showCodedAlert( Resources.NETWORK_FAILURE, ioe.getMessage() != null ? ioe.getMessage().trim() : "", GeneralAlert.ALARM );
                     break;
                 }
+            }catch(AuthorizationException ex){
+                GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+                GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " Try login again", GeneralAlert.ERROR);//TODO localize
+                SecureHttpConnector.setAuthenticationFail();
+                AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.LoginForm.class);
+                return;
             }
         }
         if ( !m_filesNotSent.isEmpty() ) {
@@ -165,27 +184,5 @@ public class SubmitServer {
         return fileContents;
     }
 
-    private void processResult(String filename, int in) {
-        if ( in == SUCCESS ) {
-            // do nothing
-        } else if(in == SERVER_CANNOT_WRITE_RESULT) {
-            if (!m_canceled) {
-                m_filesNotSent.addElement(filename);
-                GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-                GeneralAlert.getInstance().show( Resources.NETWORK_FAILURE, Resources.TRY_AGAIN_LATER , GeneralAlert.ALARM );
-            }
-        } else if (in == NO_SURVEY_IN_SERVER) {
-           GeneralAlert.getInstance().addCommand( GeneralAlert.DIALOG_OK, true);
-           GeneralAlert.getInstance().show(Resources.ERROR_TITLE, Resources.SURVEY_NOT_IN_SERVER, GeneralAlert.ERROR);
-           AppMIDlet.getInstance().setSurveyList(new SurveyList());
-           AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.SurveyList.class);
-        } else {
-            /*
-             * Just move as sent if user do not previously canceled the process.
-             * In some cases, some files will reach the server, but for reliability they will be
-             * kept in the mobile as not sent.
-             */
-            AppMIDlet.getInstance().getFileSystem().moveSentResult(filename);
-        }
-    }
+
 }

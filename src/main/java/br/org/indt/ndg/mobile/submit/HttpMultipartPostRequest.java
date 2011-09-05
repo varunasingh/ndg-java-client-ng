@@ -1,5 +1,7 @@
 package br.org.indt.ndg.mobile.submit;
 
+import br.org.indt.ndg.mobile.httptransport.AuthorizationException;
+import br.org.indt.ndg.mobile.httptransport.SecureHttpConnector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +14,7 @@ import javax.microedition.io.HttpConnection;
 /**
  * Sends given bytes as a file using HTTP POST with multipart/form-data
  */
-public class HttpMultipartPostRequest implements HttpPostRequest {
+public class HttpMultipartPostRequest {
 
     private static final String BOUNDARY = "----------V2ymHFg03ehbqgZCaKO6jy";
 
@@ -70,43 +72,39 @@ public class HttpMultipartPostRequest implements HttpPostRequest {
         stopRequest = true;
     }
 
-    public byte[] send() throws IOException {
+    public int send() throws IOException, AuthorizationException {
         HttpConnection hc = null;
         InputStream is = null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] res = null;
+        ByteArrayOutputStream bos = null;
+        OutputStream dout = null;
 
-        hc = (HttpConnection) Connector.open(m_postUrl);
-        hc.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + getBoundaryString());
-        hc.setRequestMethod(HttpConnection.POST);
+        int res = 0;
+        try{
+            hc = (HttpConnection) SecureHttpConnector.open(m_postUrl, HttpConnection.POST);
+            hc.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + getBoundaryString());
 
-         // sending request
-        if (!stopRequest) {
-            OutputStream dout = hc.openOutputStream();
-            dout.write(m_postBytes);
-            dout.close();
-        }
-         // receiving response
-        if (!stopRequest) {
-            int ch;
-            is = hc.openInputStream();
-            while ((ch = is.read()) != -1) {
-                bos.write(ch);
+            // sending request
+            if (!stopRequest) {
+                dout = hc.openOutputStream();
+                dout.write(m_postBytes);
             }
-        }
-        res = bos.toByteArray();
+            res = hc.getResponseCode();
 
-        try {
-            if(bos != null)
-                bos.close();
-            if(is != null)
-                is.close();
-            if(hc != null)
-                hc.close();
-        } catch( Exception e2 ) {
-            e2.printStackTrace();
+        }catch(IOException ex){
+            throw ex;
+        }finally{
+            try {
+                if(dout != null){
+                    dout.close();
+                }
+                if(bos != null)
+                    bos.close();
+                if(is != null)
+                    is.close();
+                if(hc != null)
+                    hc.close();
+            } catch( Exception e2 ) {}
         }
-
         return res;
     }
 }

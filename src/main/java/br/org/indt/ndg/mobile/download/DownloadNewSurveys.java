@@ -351,7 +351,7 @@ public class DownloadNewSurveys implements Runnable {
                 if (isOperationCanceled()) {
                     break;
                 }
-                httpConnection =  SecureHttpConnector.open(urlParam, Connector.READ);;
+                httpConnection =  SecureHttpConnector.open(urlParam, HttpConnection.GET);//, Connector.READ;
 
                 // 256 is given to avoid resizing without adding lengths
                 acceptField = new StringBuffer(256);
@@ -362,7 +362,6 @@ public class DownloadNewSurveys implements Runnable {
                     acceptField.append(acceptableTypes[i]);
                 }
                 httpConnection.setRequestProperty("Accept", acceptField.toString());
-                httpConnection.setRequestMethod(HttpConnection.GET);
 
                 responseCode = httpConnection.getResponseCode();
 

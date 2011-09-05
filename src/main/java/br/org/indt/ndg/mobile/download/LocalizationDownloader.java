@@ -56,7 +56,7 @@ public class LocalizationDownloader implements Runnable {
             WaitingScreen.dispose();
             listener.downloadFailed();
         }
-        
+
     }
 
     private boolean downloadFile(String url, String type){

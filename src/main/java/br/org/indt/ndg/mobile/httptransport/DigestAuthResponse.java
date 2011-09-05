@@ -191,7 +191,7 @@ public class DigestAuthResponse {
     }
 
     private String getClientNonce() {
-        if (!authParameters.contains("cnonce")) {
+        if (!authParameters.containsKey("cnonce")) {
             Random r = new Random();
             r.setSeed(System.currentTimeMillis());
             byte[] b = new byte[8];
@@ -212,7 +212,7 @@ public class DigestAuthResponse {
         //times that the nonce has been used for authentication
         //and must be incremented for each request. Otherwise
         //the nonce data becomes unavailable.
-        if (!authParameters.contains("nc")) {
+        if (!authParameters.containsKey("nc")) {
             String nc = "00000001";
             authParameters.put("nc", nc);
 

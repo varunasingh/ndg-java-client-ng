@@ -19,7 +19,7 @@ public class SecureHttpConnector implements HttpConnection {
 
     private HttpConnection m_connection; //TODO remove
     private String m_url;
-    private int m_mode;
+//    private int m_mode;
     private Hashtable m_properties;
     private static String user = null;
     private static String password = null;
@@ -33,26 +33,23 @@ public class SecureHttpConnector implements HttpConnection {
     private static final String AUTHORIZATION = "Authorization";
     private static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
-    public static HttpConnection open(String url) throws IOException, AuthorizationException{
-        return open(url, Connector.READ);
-    }
 
-    public static HttpConnection open(String url, int mode) throws IOException, AuthorizationException {
+    public static HttpConnection open(String url, String httpMethod) throws IOException, AuthorizationException {
         authenticate();
 
         HttpConnection conn = null;
-        conn = new SecureHttpConnector( url, mode );
+        conn = new SecureHttpConnector( url );
+        conn.setRequestMethod(httpMethod);
         if(digestResponse != null){
             conn.setRequestProperty(AUTHORIZATION, digestResponse.getDigestHeader(conn));
         }
         return conn;
     }
 
-    private SecureHttpConnector(String url, int mode) throws IOException {
+    private SecureHttpConnector(String url) throws IOException {
         m_url = url;
-        m_mode = mode;
         m_properties = new Hashtable();
-        m_connection = ( HttpConnection )Connector.open( m_url, m_mode );
+        m_connection = ( HttpConnection )Connector.open( m_url );
     }
 
 
@@ -134,7 +131,7 @@ public class SecureHttpConnector implements HttpConnection {
     }
 
     private  HttpConnection duplicateConnection() throws IOException {
-        HttpConnection connection = ( HttpConnection )Connector.open( m_url, m_mode);
+        HttpConnection connection = ( HttpConnection )Connector.open( m_url);
         connection.setRequestMethod(connection().getRequestMethod());
 
         Enumeration keys = m_properties.keys();
@@ -162,7 +159,7 @@ public class SecureHttpConnector implements HttpConnection {
     }
 
     public int getResponseCode() throws IOException {
-        if(connection().getResponseCode() == HttpConnection.HTTP_UNAUTHORIZED){
+        if(connection().getResponseCode() == HttpConnection.HTTP_UNAUTHORIZED && connection().getRequestMethod().equals(GET)){
             if(logged = tryLogin()){
                 try{
                     m_connection.close();

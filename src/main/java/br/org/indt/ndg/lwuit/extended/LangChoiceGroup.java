@@ -26,7 +26,7 @@ public class LangChoiceGroup extends ChoiceGroup {
         remote = Screen.getRes().getImage("Remote");
         init();
     }
-    
+
      private void init() {
 
         RadioButton radioButton = null;
