@@ -159,6 +159,10 @@ public class OpenRosaSurvey implements UserInterface{
         currentGroup.addQuestion( question );
     }
 
+    public void addQuestionToDefault( OpenRosaQuestion question ){
+        ( ( OpenRosaGroup ) groups.elementAt( 0 )).addQuestion( question );
+    }
+
     public void setGroupLabel( String label ){
         currentGroup.setGroupLabel( label );
     }

@@ -4,6 +4,7 @@ import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaResourceManager;
 import com.nokia.xfolite.xforms.dom.BoundElement;
 import com.nokia.xfolite.xforms.model.datatypes.DataTypeBase;
 import com.nokia.xfolite.xml.dom.Element;
+import com.nokia.xfolite.xml.dom.Node;
 import com.nokia.xfolite.xml.dom.WidgetFactory;
 import com.nokia.xfolite.xml.xpath.XPathNSResolver;
 
@@ -76,7 +77,14 @@ public class OpenRosaSurveyFactory implements WidgetFactory, XPathNSResolver{
     }
 
     public void addQuestion( BoundElement questionElement, int type ){
-        surveyModel.addQuestion( new OpenRosaQuestion( questionElement, type));
+        OpenRosaQuestion question = new OpenRosaQuestion( questionElement, type);
+        Node parent = questionElement.getParentNode();
+
+        if( parent.getLocalName().equals( "body" ) ){
+            surveyModel.addQuestionToDefault( question );
+        }else{
+            surveyModel.addQuestion( question );
+        }
     }
 
     public void removingElement( Element elmnt ) {

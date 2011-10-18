@@ -688,6 +688,7 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
 class XfoilExclusiveChoiceFieldUI extends ContainerUI {
 
     private ButtonGroup groupButton;
+    private String[] values;
 
     public XfoilExclusiveChoiceFieldUI(BoundElement element) {
         super(element);
@@ -700,11 +701,9 @@ class XfoilExclusiveChoiceFieldUI extends ContainerUI {
     }
 
     private String getSelectedString(){
-        for (int i = 0; i < groupButton.getButtonCount(); i++) {
-            RadioButton rb = (RadioButton) groupButton.getRadioButton(i);
-            if (rb.isSelected()) {
-                return rb.getText();
-            }
+        int index = groupButton.getSelectedIndex();
+        if( index >= 0 && index < values.length ){
+            return values[index];
         }
         return "";
     }
@@ -740,7 +739,7 @@ class XfoilExclusiveChoiceFieldUI extends ContainerUI {
 
         int length = choices.getLength();
         String[] names = new String[length];
-        String[] values = new String[length];
+        values = new String[length];
         boolean[] selected = new boolean[length];
 
         String chosenVal = " " + bindElem.getStringValue() + " ";

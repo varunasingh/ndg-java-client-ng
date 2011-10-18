@@ -18,6 +18,7 @@ public class OpenRosaQuestion {
 
     public OpenRosaQuestion( BoundElement element, int type ){
         this.element = element;
+        this.type = type;
     }
 
     public BoundElement getBoundElement(){
