@@ -6,7 +6,6 @@ import com.sun.lwuit.Component;
 import com.sun.lwuit.Font;
 import com.sun.lwuit.Graphics;
 import com.sun.lwuit.Image;
-import com.sun.lwuit.Label;
 import com.sun.lwuit.TextArea;
 import com.sun.lwuit.TextField;
 import com.sun.lwuit.animations.CommonTransitions;
@@ -46,8 +45,6 @@ public class NDGLookAndFeel extends DefaultLookAndFeel {
         }
         return displayText;
     }
-
-    
 
     private void drawDateField(Graphics g, DateField df) {
         setFG(g, df);
@@ -254,5 +251,4 @@ public class NDGLookAndFeel extends DefaultLookAndFeel {
         }
         return arrow;
     }
-
 }

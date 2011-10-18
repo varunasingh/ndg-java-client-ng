@@ -42,7 +42,6 @@ public class FileStores {
         return selectedGroup;
     }
 
-
     public Survey getSurveyStructure() {
         return surveyStructure;
     }
@@ -55,7 +54,6 @@ public class FileStores {
         surveyModel = new OpenRosaSurvey();
         surveyModel.initialize();
     }
-
 
     public OpenRosaSurvey getSurveyModel(){
         return surveyModel;
