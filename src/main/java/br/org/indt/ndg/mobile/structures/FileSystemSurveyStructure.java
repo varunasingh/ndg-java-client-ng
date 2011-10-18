@@ -7,16 +7,12 @@ import java.util.Vector;
 
 public class FileSystemSurveyStructure {
 
-    private Vector surveyDirNames;
-    private Vector surveyNames;
-    private Vector surveyIds;
+    private Vector surveys;
 
     private int currentIndex;
 
     public FileSystemSurveyStructure() {
-        surveyNames = new Vector();
-        surveyDirNames = new Vector();
-        surveyIds = new Vector();
+        surveys = new Vector();
         currentIndex = 0;
     }
 
@@ -28,43 +24,56 @@ public class FileSystemSurveyStructure {
         return currentIndex;
     }
 
-    public void addFileName(String _file) {
-        surveyDirNames.addElement(_file);
-        String id = _file.substring(NdgConsts.XFORMS_SURVEY_DIR_PREFIX.length(), _file.length() - 1);
-        surveyIds.addElement(id);
-    }
-
-    public void addName(String _name) {
-        surveyNames.addElement(_name);
-    }
-
-    public void addId(String id)
-    {
-        surveyIds.addElement(id);
-    }
-
     public Vector getNames() {
-        return surveyNames;
+        Vector names = new Vector();
+        for( int i = 0; i < surveys.size(); i++)
+        {
+            names.addElement(((SurveyStructure)surveys.elementAt(i)).surveyName);
+        }
+        return names;
     }
 
     public String getDirName() {
-        return (String) surveyDirNames.elementAt(currentIndex);
+        return getCurrentSurvey().surveyDirName;
     }
 
     public int getSurveysCount(){
-        return surveyNames.size();
+        return surveys.size();
     }
 
-    public void removeNameAndFileNameAtCurrentIndex() {
-        surveyDirNames.removeElementAt(currentIndex);
-        surveyNames.removeElementAt(currentIndex);
+    public void removeSurveyAtCurrentIndex() {
+        surveys.removeElementAt(currentIndex);
     }
 
     public String getCurrentName(){
-        return (String)surveyNames.elementAt(currentIndex);
+        return getCurrentSurvey().surveyName;
     }
 
     public String getCurrentId(){
-        return (String)surveyIds.elementAt(currentIndex);
+        return getCurrentSurvey().surveyId;
+    }
+
+    public void addSurveyInfo(String dirName, String name) {
+        SurveyStructure newSurveyStructure = new SurveyStructure(dirName, name);
+        newSurveyStructure.surveyDirName = dirName;
+        surveys.addElement(newSurveyStructure);
+    }
+    
+    private SurveyStructure getCurrentSurvey()
+    {
+        return (SurveyStructure) surveys.elementAt(currentIndex);
+    }
+    
+    private class SurveyStructure
+    {
+        public SurveyStructure(String surveyDirName, String surveyName) 
+        {
+            this.surveyDirName = surveyDirName;
+            this.surveyName = surveyName;
+            this.surveyId = surveyDirName.substring(NdgConsts.XFORMS_SURVEY_DIR_PREFIX.length(), surveyDirName.length() - 1);
+        }
+        public String surveyDirName;
+        public String surveyName;
+        public String surveyId;
     }
 }

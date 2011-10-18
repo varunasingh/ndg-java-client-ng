@@ -207,7 +207,7 @@ public class Resources {
     public static final String EMPTY_KEY = Localization.getMessage("QTJ_EMPTY_KEY");
     public static final String WRONG_KEY = Localization.getMessage("QTJ_WRONG_KEY");
 
-    
+
     /** General */
     /** Messages */
     public static final String MSG_SERVER_CANT_WRITE_RESULTS = Localization.getMessage("QTJ_MSG_SERVER_CANT_WRITE_RESULTS");
@@ -263,7 +263,7 @@ public class Resources {
     public static final String UPDATE = Localization.getMessage("QTJ_UPDATE");
     public static final String UPDATE_SUCCESS = Localization.getMessage("QTJ_UPDATE_SUCCESS");
 
-    
+
     private boolean error = false;
     public static Image check;
     public static Image question;

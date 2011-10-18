@@ -53,7 +53,6 @@ public class OpenRosaGroupScreen extends Screen implements ActionListener, SaveR
 
         form.addCommand( OpenRosaBackCommand.getInstance().getCommand() );
         form.addCommand( OpenRosaInterviewSaveCommand.getInstance().getCommand() );
-//        form.addCommand(OpenRosaInterviewSaveCommand.getInstance().getCommand());
 
         try {
             form.removeCommandListener(this);

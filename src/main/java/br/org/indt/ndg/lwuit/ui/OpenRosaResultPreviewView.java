@@ -5,35 +5,47 @@ import br.org.indt.ndg.lwuit.control.DeleteCurrentResultCommand;
 import br.org.indt.ndg.lwuit.control.OpenResultCommand;
 import br.org.indt.ndg.lwuit.control.SendResultCommand;
 import br.org.indt.ndg.lwuit.control.SurveysControl;
-import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaResultWidgetFactory;
+import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaUtils;
+import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaGroup;
+import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaQuestion;
+import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaSurvey;
+import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.FileSystem;
-import br.org.indt.ndg.mobile.NdgConsts;
 import br.org.indt.ndg.mobile.Resources;
-import com.nokia.xfolite.xforms.dom.UserInterface;
-import com.nokia.xfolite.xml.dom.WidgetFactory;
+import br.org.indt.ndg.mobile.multimedia.Base64Coder;
+import com.nokia.xfolite.xforms.dom.BoundElement;
+import com.nokia.xfolite.xforms.model.datatypes.DataTypeBase;
+import com.sun.lwuit.Component;
 import com.sun.lwuit.Container;
+import com.sun.lwuit.Font;
+import com.sun.lwuit.Image;
+import com.sun.lwuit.Label;
 import com.sun.lwuit.events.ActionEvent;
 import com.sun.lwuit.events.ActionListener;
+import com.sun.lwuit.layouts.BoxLayout;
+import java.util.Date;
 
 /**
  *
  * @author damian.janicki
  */
-public class OpenRosaResultPreviewView extends OpenRosaScreen implements UserInterface, ActionListener {
-
-    private Container rootContainer;
+public class OpenRosaResultPreviewView extends Screen implements ActionListener {
 
     private String title1;
     private String title2 = Resources.RESULTS_LIST_TITLE;
 
-    public WidgetFactory createWidgetFactory() {
-        return new OpenRosaResultWidgetFactory(rootContainer);
-    }
+
+    private Font questionFont = NDGStyleToolbox.fontMedium;
+    private Font answerFont = NDGStyleToolbox.fontMedium;
+    final public static int PREVIEW_PHOTO_SIZE = 80;
+
+    private OpenRosaSurvey survey = null;
+
 
     protected void loadData() {
         title1 = SurveysControl.getInstance().getSurveyTitle();
-        rootContainer = new Container();
+        survey = AppMIDlet.getInstance().getFileStores().getSurveyModel();
     }
 
     protected void customize() {
@@ -59,14 +71,34 @@ public class OpenRosaResultPreviewView extends OpenRosaScreen implements UserInt
         }
         form.addCommandListener(this);
         setTitle(title1, title2);
-        form.addComponent(rootContainer);
 
-        createXFormsDocument();
+        addQuestions();
+    }
 
-        String dirName = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
-        String file = AppMIDlet.getInstance().getRootDir() + dirName + NdgConsts.SURVEY_NAME;
-        addResultData();
-        load(file);
+
+    public void addQuestions(){
+        for(int idxGr = 0; idxGr < survey.getGroups().size(); idxGr++){
+            OpenRosaGroup group = (OpenRosaGroup)survey.getGroups().elementAt( idxGr );
+
+            for(int idxQue = 0; idxQue < group.getQuestions().size(); idxQue++){
+                OpenRosaQuestion que = (OpenRosaQuestion)group.getQuestions().elementAt( idxQue );
+                switch ( que.getType() ){
+                    case OpenRosaQuestion.TYPE_INPUT:
+                        addInputPreview( que.getBoundElement() );
+                        break;
+                    case OpenRosaQuestion.TYPE_SELECT:
+                        addSelectPreview( que.getBoundElement() );
+                        break;
+                    case OpenRosaQuestion.TYPE_SELECT1:
+                        addSelectPreview( que.getBoundElement() );
+                        break;
+                    case OpenRosaQuestion.TYPE_UPLOAD_IMAGE:
+                        addPhotoPreview( que.getBoundElement() );
+                        break;
+                    default:
+                }
+            }
+        }
     }
 
     public void actionPerformed(ActionEvent evt) {
@@ -81,4 +113,60 @@ public class OpenRosaResultPreviewView extends OpenRosaScreen implements UserInt
             SendResultCommand.getInstance().execute(null);
         }
     }
+
+
+        public void addPhotoPreview(BoundElement element){
+        String questionLabel = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(element);
+
+        Image samllImgage = null;
+        if(element.getStringValue() != null && !element.getStringValue().equals("")){
+            byte[] byteArray = Base64Coder.decode(element.getStringValue());
+            Image img = Image.createImage(byteArray, 0, byteArray.length);
+            samllImgage = img.scaled(PREVIEW_PHOTO_SIZE, PREVIEW_PHOTO_SIZE);
+        }
+        Container container = new Container( new BoxLayout( BoxLayout.Y_AXIS ) );
+        container.addComponent( UIUtils.createTextArea( questionLabel + ":", questionFont, NDGStyleToolbox.getInstance().questionPreviewColor) );
+        container.addComponent(new Label(samllImgage));
+        form.addComponent(container);
+    }
+
+    public void addSelectPreview(BoundElement element){
+        String questionLabel = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(element);
+        String questionValue = element.getStringValue();
+        questionValue = questionValue.replace(' ', '#');
+
+        addQuestionComponent(questionLabel, questionValue);
+    }
+
+    public void addInputPreview(BoundElement element){
+
+        String questionLabel = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(element);
+        String questionValue = "";
+
+        DataTypeBase a = element.getDataType();
+        if (a != null && a.getBaseTypeID() == DataTypeBase.XML_SCHEMAS_UNKNOWN) {
+            questionValue = Resources.UNSUPPORTED_TYPE;
+        } else{
+            questionValue = element.getStringValue();
+        }
+
+        if(element.getDataType().getBaseTypeID() == DataTypeBase.XML_SCHEMAS_DATE){
+//            questionValue = toUserFormat(questionValue);
+            Date date = OpenRosaUtils.getDateFromString(questionValue);
+            questionValue = OpenRosaUtils.getUserFormatDate(date);
+        }
+
+        addQuestionComponent(questionLabel, questionValue);
+    }
+
+    private void addQuestionComponent(String label, String value){
+        Container container = new Container( new BoxLayout( BoxLayout.Y_AXIS ) );
+        container.addComponent( UIUtils.createTextArea( label + ":", questionFont, NDGStyleToolbox.getInstance().questionPreviewColor) );
+        container.addComponent( UIUtils.createTextArea( value, answerFont, NDGStyleToolbox.getInstance().answerPreviewColor ) );
+
+        form.addComponent(container);
+    }
 }
+
+
+

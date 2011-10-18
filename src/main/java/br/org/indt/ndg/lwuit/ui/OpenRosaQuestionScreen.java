@@ -16,7 +16,6 @@ import br.org.indt.ndg.lwuit.ui.camera.CameraManagerListener;
 import br.org.indt.ndg.lwuit.ui.camera.OpenRosaCameraManager;
 import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaConstraintHelper;
 import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaUtils;
-import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaWidgetFactory;
 import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaGroup;
 import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaQuestion;
 import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaSurvey;
@@ -665,8 +664,8 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
         String chosenVal = " " + bindElem.getStringValue() + " ";
         for (int i = 0; i < length; i++) {
             XFormsElement n = (XFormsElement) choices.item(i);
-            String label = OpenRosaWidgetFactory.getResoruceManager().tryGetLabelForElement(n);
-            String value = OpenRosaWidgetFactory.getResoruceManager().tryGetLabelForElement(n);
+            String label = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(n);
+            String value = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(n);
 
             if (!value.equals("") && chosenVal.indexOf(" " + value + " ") >= 0) {
                 selected[i] = true;
@@ -747,7 +746,7 @@ class XfoilExclusiveChoiceFieldUI extends ContainerUI {
         String chosenVal = " " + bindElem.getStringValue() + " ";
         for (int i = 0; i < length; i++) {
             XFormsElement n = (XFormsElement) choices.item(i);
-            String label = OpenRosaWidgetFactory.getResoruceManager().tryGetLabelForElement(n);
+            String label = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(n);
             String value = getValue(n);
 
             if (!value.equals("") && chosenVal.indexOf(" " + value + " ") >= 0) {

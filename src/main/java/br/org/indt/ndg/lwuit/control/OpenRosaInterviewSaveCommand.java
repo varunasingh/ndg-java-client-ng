@@ -25,7 +25,7 @@ public class OpenRosaInterviewSaveCommand extends CommandControl {
 
     protected void doAction(Object parameter) {
         XFormsDocument doc = (XFormsDocument)parameter;
-        PersistenceManager.getInstance().saveOpenRosaResult(doc, saveObserver, startDate);
+        PersistenceManager.getInstance().saveOpenRosaResult( doc, saveObserver, startDate );
     }
 
     public static OpenRosaInterviewSaveCommand getInstance(){

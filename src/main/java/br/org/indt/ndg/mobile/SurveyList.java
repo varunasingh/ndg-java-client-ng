@@ -10,14 +10,7 @@ public class SurveyList {
 
     public SurveyList() {
         fs = AppMIDlet.getInstance().getFileSystem();
-        surveyList = new Vector();
-        Vector surveyNames = fs.SurveyNames();
-
-        Enumeration e = surveyNames.elements();
-
-        while (e.hasMoreElements()) {
-            surveyList.addElement((String) e.nextElement());
-        }
+        refresh();
     }
 
     public Vector getList() {
@@ -27,9 +20,23 @@ public class SurveyList {
     public void setSurveyCurrentIndex( int index ) {
         fs.setSurveyCurrentIndex(index);
     }
-
+    
     public void deleteSurvey() {
         String dirName = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
         fs.deleteSurveyDir(dirName);
     }
+    
+    public void refresh()
+    {
+        surveyList = new Vector();
+        Vector surveyNames = fs.SurveyNames();
+
+        Enumeration e = surveyNames.elements();
+
+        while (e.hasMoreElements()) {
+            surveyList.addElement((String) e.nextElement());
+        }
+    }
+    
+    //public void reload
 }

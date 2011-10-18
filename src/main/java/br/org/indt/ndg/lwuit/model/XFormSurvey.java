@@ -10,6 +10,7 @@ public class XFormSurvey extends Survey {
     private String m_downloadUrl = null;
     private String  m_formId = null;
     private String m_majorVersion = null;
+    private String formName = null;
 
     public String getDownloadUrl() {
         return m_downloadUrl;

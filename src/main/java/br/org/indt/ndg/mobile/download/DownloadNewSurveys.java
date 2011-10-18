@@ -634,6 +634,7 @@ public class DownloadNewSurveys implements Runnable {
             ByteArrayInputStream bais = new ByteArrayInputStream(surveyBytes);
             parser.parseInputStream(bais);
             String surveyID = getCurrentSurveyId();
+            String surveyName = getCurrentSurveyTitle();
             FileConnection fconnDir = (FileConnection) Connector.open(AppMIDlet.getInstance().getRootDir() + m_surveyDirPrefix + surveyID + "/");
             if (!fconnDir.exists()) {
                 fconnDir.mkdir();
@@ -651,6 +652,7 @@ public class DownloadNewSurveys implements Runnable {
                 dos.close();
                 fconnSurvey.close();
                 m_surveysDirFiles.put(AppMIDlet.getInstance().getRootDir() + m_surveyDirPrefix + surveyID + "/", AppMIDlet.getInstance().getRootDir() + m_surveyDirPrefix + surveyID + "/" + NdgConsts.SURVEY_NAME);
+                AppMIDlet.getInstance().getFileSystem().addNewSurveyStructure(surveyID, surveyName);
             } else {
                 //The following surveys were not downloaded since they already exist in mobile.
                 m_notDownloadedSurveys += "\n" + getCurrentSurveyTitle();
@@ -662,6 +664,7 @@ public class DownloadNewSurveys implements Runnable {
                 cancelOperation();
                 removeInvalidSurveys();
             }
+            AppMIDlet.getInstance().getSurveyList().refresh();
         }
     }
 

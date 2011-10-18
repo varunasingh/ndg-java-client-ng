@@ -1,9 +1,7 @@
 package br.org.indt.ndg.mobile;
 
-import br.org.indt.ndg.lwuit.control.SurveysControl;
 import br.org.indt.ndg.lwuit.ui.LoginForm;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
-import br.org.indt.ndg.lwuit.ui.OpenRosaInterviewForm;
 import br.org.indt.ndg.lwuit.ui.NDGLookAndFeel;
 import br.org.indt.ndg.lwuit.ui.Screen;
 import java.io.IOException;
@@ -232,11 +230,6 @@ public class AppMIDlet extends MIDlet {
     public void setDisplayable( Class c ) {
         Screen.show( c, true);
     }
-
-    public void showInterview() {
-        AppMIDlet.getInstance().setDisplayable(OpenRosaInterviewForm.class);
-    }
-
 
     public LocationHandler getLocationHandler() {
         return this.locationHandler;

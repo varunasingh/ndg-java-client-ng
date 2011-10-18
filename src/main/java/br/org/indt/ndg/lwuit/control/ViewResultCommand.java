@@ -45,6 +45,7 @@ public class ViewResultCommand extends CommandControl {
             try { Thread.sleep(200); } catch(Exception e){}
             if (AppMIDlet.getInstance().getFileSystem().getResultFilename() != null && Utils.isCurrentDirXForm() ) {
                 AppMIDlet.getInstance().getFileStores().loadXFormResult();
+                AppMIDlet.getInstance().getFileStores().loadSurvey();
                 AppMIDlet.getInstance().setDisplayable(OpenRosaResultPreviewView.class);
             }
         }
