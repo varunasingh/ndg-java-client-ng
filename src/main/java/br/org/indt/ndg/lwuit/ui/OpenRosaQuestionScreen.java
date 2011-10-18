@@ -1,8 +1,10 @@
-package br.org.indt.ndg.lwuit.ui.openrosa;
+package br.org.indt.ndg.lwuit.ui;
 
 import br.org.indt.ndg.lwuit.control.OpenFileBrowserCommand;
 import br.org.indt.ndg.lwuit.control.RemovePhotoCommand;
+import br.org.indt.ndg.lwuit.control.SaveGroupCommand;
 import br.org.indt.ndg.lwuit.control.ShowPhotoCommand;
+import br.org.indt.ndg.lwuit.control.SurveysControl;
 import br.org.indt.ndg.lwuit.control.TakePhotoCommand;
 import br.org.indt.ndg.lwuit.extended.CheckBox;
 import br.org.indt.ndg.lwuit.extended.DateField;
@@ -10,12 +12,14 @@ import br.org.indt.ndg.lwuit.extended.DescriptiveField;
 import br.org.indt.ndg.lwuit.extended.NumericField;
 import br.org.indt.ndg.lwuit.extended.RadioButton;
 import br.org.indt.ndg.lwuit.model.ImageData;
-import br.org.indt.ndg.lwuit.ui.GeneralAlert;
-import br.org.indt.ndg.lwuit.ui.ImageQuestionContextMenu;
-import br.org.indt.ndg.lwuit.ui.Screen;
 import br.org.indt.ndg.lwuit.ui.camera.CameraManagerListener;
 import br.org.indt.ndg.lwuit.ui.camera.OpenRosaCameraManager;
-import br.org.indt.ndg.lwuit.ui.UIUtils;
+import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaConstraintHelper;
+import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaUtils;
+import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaWidgetFactory;
+import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaGroup;
+import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaQuestion;
+import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaSurvey;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.Resources;
@@ -23,11 +27,8 @@ import br.org.indt.ndg.mobile.multimedia.Base64Coder;
 import com.nokia.xfolite.xforms.dom.BoundElement;
 import com.nokia.xfolite.xforms.dom.XFormsElement;
 import com.nokia.xfolite.xforms.model.datatypes.DataTypeBase;
-import com.nokia.xfolite.xml.dom.Element;
 import com.nokia.xfolite.xml.dom.Node;
-import com.nokia.xfolite.xml.dom.WidgetFactory;
 import com.nokia.xfolite.xml.xpath.NodeSet;
-import com.nokia.xfolite.xml.xpath.XPathNSResolver;
 import com.sun.lwuit.Button;
 import com.sun.lwuit.ButtonGroup;
 import com.sun.lwuit.Component;
@@ -45,161 +46,90 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
-
-
-
-// ********************      helper classes     ******************************8
 /**
  *
  * @author damian.janicki
  */
-public class OpenRosaWidgetFactory implements WidgetFactory, XPathNSResolver {
+public class OpenRosaQuestionScreen extends Screen implements ActionListener{
 
-    private Container rootContainer = null;
-    private Container currentGroup = null;
-    private static OpenRosaResourceManager resourceManager = new OpenRosaResourceManager();
-    private Vector createdContainers = new Vector();
+    private String title1;
+    private String title2;
+    private OpenRosaGroup group = null;
 
-    public OpenRosaWidgetFactory(Container cont) {
-        rootContainer = cont;
-        currentGroup = rootContainer;
-        rootContainer.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
-        resourceManager.clear();
+    private Vector containers = null;
+
+    protected void loadData() {
+        group = AppMIDlet.getInstance().getFileStores().getSelectedGroup();
+
+        title1 = SurveysControl.getInstance().getSurveyTitle();
+        title2 = Resources.NEW_INTERVIEW;
+
+        containers = new Vector();
     }
 
-    public static OpenRosaResourceManager getResoruceManager(){
-        return resourceManager;
+    protected void customize() {
+        setTitle( title1, title2 );
+
+        form.removeAllCommands();
+        form.removeAll();
+
+        form.setLayout( new BoxLayout( BoxLayout.Y_AXIS ) );
+        form.getContentPane().getStyle().setBorder( Border.createEmpty(), false );
+        form.setScrollAnimationSpeed( 500 );
+        form.setFocusScrolling( true );
+
+        form.addCommand( BackToCategoryCommand.getInstance().getCommand() );
+        form.addCommand( SaveGroupCommand.getInstance().getCommand() );
+
+        try {
+        form.removeCommandListener( this );
+        } catch (NullPointerException npe) {
+        }
+        form.addCommandListener( this );
+
+        appendQuestions();
     }
 
-    public boolean commitValues() {
-        boolean result = true;
-        for (int i = 0; i < createdContainers.size(); i++) {
-            if (!((ContainerUI) createdContainers.elementAt(i)).validate()) {
-                result = false;
-                ((ContainerUI) createdContainers.elementAt(i)).showBadInputError();
-                break;
+    private void appendQuestions(){
+        Vector questions = group.getQuestions();
+
+        for ( int idx = 0; idx <  questions.size(); idx++ ){
+            OpenRosaQuestion que = (OpenRosaQuestion)questions.elementAt( idx );
+            ContainerUI comp = null;
+            switch ( que.getType() ){
+                case OpenRosaQuestion.TYPE_INPUT:
+                    comp = createInput( que.getBoundElement() ) ;
+                    break;
+                case OpenRosaQuestion.TYPE_SELECT:
+                    comp = new XfoilMultipleChoiceFieldUI( que.getBoundElement() );
+                    break;
+                case OpenRosaQuestion.TYPE_SELECT1:
+                    comp = new XfoilExclusiveChoiceFieldUI( que.getBoundElement() );
+                    break;
+                case OpenRosaQuestion.TYPE_UPLOAD_IMAGE:
+                    comp = new XfoilPhotoFieldUi( que.getBoundElement() );
+                    break;
+                default:
+            }
+            if(comp != null){
+                containers.addElement( comp );
+                form.addComponent( comp );
             }
         }
-        if(result == true) {
-            for (int i = 0; i < createdContainers.size(); i++) {
-                ((ContainerUI) createdContainers.elementAt(i)).commitValue();
-            }
-        }
-        return result;
     }
 
-    public boolean isFormChanged(){
-        for (int i = 0; i < createdContainers.size(); i++) {
-            if (((ContainerUI) createdContainers.elementAt(i)).isChanged()){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void elementParsed(Element el) {
-        String tagName = el.getLocalName();
-        if ( tagName.equals( "group" ) ) {
-            addGroup( el );
-        }
-    }
-
-    public void childrenParsed(Element el) {
-        String tagName = el.getLocalName();
-        BoundElement binding = null;
-        if (el instanceof BoundElement) {
-            binding = (BoundElement) el;
-        }
-        Component comp = null;
-
-        if ("input" == tagName || "secret" == tagName) {
-            comp = addInput(binding);
-        } else if (tagName == "select") {
-            comp = addSelect(binding);
-        } else if ("range" == tagName) {
-            addInput(binding);
-        } else if ("output" == tagName) {
-        } else if ("trigger" == tagName) {
-        } else if ("switch" == tagName) {
-        } else if ("upload" == tagName) {
-            String mediatype = el.getAttribute("mediatype");
-            if(mediatype!=null && mediatype.indexOf("image") > -1) {
-                comp = addPhotoUI(binding);
-            }
-        } else if ("submit" == tagName) {
-        } else if ("select1" == tagName) {
-            comp = addSelect1(binding);
-        } else if ("img" == tagName) {
-        } else if ("hr" == tagName) {
-        } else if ("p" == tagName) {
-        } else if ("table" == tagName) {
-        } else if ("td" == tagName || "th" == tagName) {
-        } else if (tagName == "value") {
-            addTextValue(el);
-        }else if ( tagName == "group" ) {
-            ((GroupContainer)currentGroup).setGroupLabel( el );
-        } else {
-        }
-
-        if(comp != null) {
-            currentGroup.addComponent(comp);
-            createdContainers.addElement(comp);
-        }
-    }
-
-    public void addTextValue(Element el){
-        Element parent = (Element)el.getParentNode();
-        if(!parent.getNodeName().equals("text")){
-            return;
-        }
-
-        String id = parent.getAttribute("id");
-        String value = el.getText();
-
-        resourceManager.put(id, value);
-    }
-
-    public void addGroup( Element el ){
-
-        GroupContainer groupContainer = new GroupContainer();
-
-        currentGroup = groupContainer;
-        rootContainer.addComponent( currentGroup );
-    }
-
-    public void removingElement(Element el) {
-    }
-
-    public void elementInitialized(Element el) {
-    }
-
-    public void childrenInitialized(Element el) {
-    }
-
-    public String lookupNamespaceURI(String prefix) {
-        return "";
-    }
-
-    private Component addPhotoUI(BoundElement bindElem){
-        return new XfoilPhotoFieldUi(bindElem);
-    }
-
-    private Component addInput(BoundElement bindElem) {
+    private ContainerUI createInput(BoundElement bindElem) {
         DataTypeBase a = bindElem.getDataType();
-        Component question = null;
+        ContainerUI question = null;
 
         if (a != null) {
             switch (a.getBaseTypeID()) {
                 case DataTypeBase.XML_SCHEMAS_DATE:
                     question = new XfoilDateFieldUI(bindElem);
                     break;
-//                case DataTypeBase.XML_SCHEMAS_DATETIME:
-//                    break;
                 case DataTypeBase.XML_SCHEMAS_TIME:
-                    //question = new XfoilTimeFieldUI(bindElem);
                     break;
                 case DataTypeBase.XML_SCHEMAS_STRING:
-//                case DataTypeBase.XML_SCHEMAS_ANYURI:
                     question = new XfoilDescriptiveFieldUI(bindElem);
                     break;
                 case DataTypeBase.XML_SCHEMAS_DECIMAL:
@@ -214,30 +144,57 @@ public class OpenRosaWidgetFactory implements WidgetFactory, XPathNSResolver {
        return question;
     }
 
-    private Component addSelect(BoundElement bindElem) {
-        Component question = new XfoilMultipleChoiceFieldUI(bindElem);
-        return question;
+    public boolean commitValues() {
+        boolean result = true;
+        for (int i = 0; i < containers.size(); i++) {
+            if (!((ContainerUI) containers.elementAt(i)).validate()) {
+                result = false;
+                ((ContainerUI) containers.elementAt(i)).showBadInputError();
+                break;
+            }
+        }
+        if(result == true) {
+            for (int i = 0; i < containers.size(); i++) {
+                ((ContainerUI) containers.elementAt(i)).commitValue();
+            }
+        }
+        return result;
     }
 
-    private Component addSelect1(BoundElement bindElem) {
-        Component question = new XfoilExclusiveChoiceFieldUI(bindElem);
-        return question;
+    public boolean isFormChanged(){
+        for (int i = 0; i < containers.size(); i++) {
+            if (((ContainerUI) containers.elementAt(i)).isChanged()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public void actionPerformed( ActionEvent ae ) {
+        Object cmd = ae.getSource();
+        if ( cmd == BackToCategoryCommand.getInstance().getCommand() ) {
+            GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_YES_NO, true);
+            if( isFormChanged() &&  GeneralAlert.RESULT_YES ==  GeneralAlert.getInstance().show( Resources.CMD_SAVE,
+                                             Resources.SAVE_SURVEY_QUESTION,
+                                             GeneralAlert.CONFIRMATION)){
+                saveCategory();
+            }else{
+                BackToCategoryCommand.getInstance().execute( null );
+            }
+
+        } else if( cmd == SaveGroupCommand.getInstance().getCommand() ) {
+            saveCategory();
+        }
+    }
+
+    private void saveCategory(){
+        if( commitValues() ){
+            group.setChanged( true );
+            BackToCategoryCommand.getInstance().execute( null );
+        }
     }
 }
-
-class GroupContainer extends Container{
-    TextArea groupLabel = null;
-
-    public GroupContainer(){
-        groupLabel = UIUtils.createTextArea( "", NDGStyleToolbox.fontSmall );
-        addComponent( groupLabel );
-    }
-
-    public void setGroupLabel( Element groupElem ){
-        groupLabel.setText( OpenRosaWidgetFactory.getResoruceManager().tryGetLabelForElement( groupElem ) );
-    }
-}
-
 
 abstract class ContainerUI extends Container implements FocusListener {
 
@@ -269,12 +226,10 @@ abstract class ContainerUI extends Container implements FocusListener {
 
     protected void addQuestionName() {
 
-        addComponent(new Label(""));
-        XFormsElement labelEl = (XFormsElement) element.getUserData(XFormsElement.LABEL_KEY);
+        addComponent( new Label("") );
+        TextArea questionName = UIUtils.createQuestionName( OpenRosaSurvey.getResourceManager().tryGetLabelForElement( element ) );
 
-        TextArea questionName = UIUtils.createQuestionName( OpenRosaWidgetFactory.getResoruceManager().tryGetLabelForElement(element));
-
-        this.addComponent(questionName);
+        this.addComponent( questionName );
     }
 
     protected abstract boolean validate();

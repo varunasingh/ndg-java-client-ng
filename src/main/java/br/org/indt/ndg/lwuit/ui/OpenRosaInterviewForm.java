@@ -108,7 +108,7 @@ public class OpenRosaInterviewForm extends OpenRosaScreen implements UserInterfa
     }
 
     public void onResultsSaved() {
-        AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.ResultList.class);
+        AppMIDlet.getInstance().setDisplayable( br.org.indt.ndg.lwuit.ui.ResultList.class );
     }
 
     public WidgetFactory createWidgetFactory() {

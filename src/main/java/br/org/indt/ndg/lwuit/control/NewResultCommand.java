@@ -1,5 +1,6 @@
 package br.org.indt.ndg.lwuit.control;
 
+import br.org.indt.ndg.lwuit.ui.OpenRosaGroupScreen;
 import br.org.indt.ndg.lwuit.ui.WaitingScreen;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.FileSystem;
@@ -42,8 +43,11 @@ public class NewResultCommand extends CommandControl {
                 AppMIDlet.getInstance().getFileSystem().setLocalFile(false);
                 AppMIDlet.getInstance().getFileStores().resetResultStructure();
 
+
                 AppMIDlet.getInstance().setTimeTracker((new Date()).getTime());  //to keep track of time used to create new survey
-                AppMIDlet.getInstance().showInterview();
+                AppMIDlet.getInstance().getFileStores().loadSurvey();
+                AppMIDlet.getInstance().setDisplayable( OpenRosaGroupScreen.class );
+//                AppMIDlet.getInstance().showInterview();
             } catch (Exception e) {
                 e.printStackTrace();
             }

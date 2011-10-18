@@ -53,12 +53,7 @@ public class TitleBar implements Painter {
     }
 
     public int getPrefferedH() {
-        if( title1.length() == 0 && title2.length() == 0 )
-            return 0;
-
-        int fontsHight = 3*TEXT_PADDING + getTitleFont().getHeight() + getTitleFont().getHeight();//title1 height and title2 height
-        int logoHight = 2*TEXT_PADDING + logoHeight;
-        return fontsHight < logoHight ? logoHight : fontsHight;
+        return 2*TEXT_PADDING + logoHeight;
     }
 
     public void paint(Graphics g, Rectangle rect) {

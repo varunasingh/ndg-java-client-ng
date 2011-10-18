@@ -6,6 +6,8 @@ import br.org.indt.ndg.lwuit.control.SurveysControl;
 
 import br.org.indt.ndg.lwuit.model.Survey;
 import br.org.indt.ndg.lwuit.ui.GeneralAlert;
+import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaGroup;
+import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaSurvey;
 import br.org.indt.ndg.mobile.xmlhandle.Parser;
 import com.nokia.xfolite.xml.dom.Document;
 import java.io.IOException;
@@ -19,6 +21,8 @@ public class FileStores {
 
     private Survey surveyStructure = null;
     private Document xformResult;
+    private OpenRosaSurvey surveyModel = null;
+    private OpenRosaGroup selectedGroup = null;
 
     private Parser parser=null;
 
@@ -30,12 +34,31 @@ public class FileStores {
         else return false;
     }
 
+    public void setSelectedGroup(OpenRosaGroup group){
+        selectedGroup = group;
+    }
+
+    public OpenRosaGroup getSelectedGroup(){
+        return selectedGroup;
+    }
+
+
     public Survey getSurveyStructure() {
         return surveyStructure;
     }
 
     public void resetResultStructure(){
         xformResult = null;
+    }
+
+    public void loadSurvey(){
+        surveyModel = new OpenRosaSurvey();
+        surveyModel.initialize();
+    }
+
+
+    public OpenRosaSurvey getSurveyModel(){
+        return surveyModel;
     }
 
     public void createSurveyStructure() {
