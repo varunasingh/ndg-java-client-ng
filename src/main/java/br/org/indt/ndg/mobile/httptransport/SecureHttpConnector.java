@@ -1,5 +1,6 @@
 package br.org.indt.ndg.mobile.httptransport;
 
+import br.org.indt.ndg.mobile.AppMIDlet;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -92,7 +93,7 @@ public class SecureHttpConnector implements HttpConnection {
         HttpConnection testConnection = null;
         boolean authorized = false;
         try {
-            String url = "http://10.132.152.150:8080/ndg/ReceiveSurvey";//TODO change this URL
+            String url = AppMIDlet.getInstance().getSettings().getStructure().getReceiveSurveyURL();
 
             testConnection = (HttpConnection)Connector.open( url );
             if (testConnection.getResponseCode() == HttpConnection.HTTP_UNAUTHORIZED) {

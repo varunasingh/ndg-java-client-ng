@@ -20,12 +20,12 @@ public class SurveyList {
     public void setSurveyCurrentIndex( int index ) {
         fs.setSurveyCurrentIndex(index);
     }
-    
+
     public void deleteSurvey() {
         String dirName = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
         fs.deleteSurveyDir(dirName);
     }
-    
+
     public void refresh()
     {
         surveyList = new Vector();
@@ -37,6 +37,6 @@ public class SurveyList {
             surveyList.addElement((String) e.nextElement());
         }
     }
-    
+
     //public void reload
 }

@@ -167,7 +167,7 @@ public class PersistenceManager {
             fname = AppMIDlet.getInstance().getFileSystem().getResultFilename();
         } else {
             String UID = generateUniqueID();
-            fname = "r_" + surveyId + "_" + AppMIDlet.getInstance().getIMEI() + "_" + UID + ".xml";
+            fname = "r_" + surveyId + "_" + UID + ".xml";
         }
         return fname;
     }

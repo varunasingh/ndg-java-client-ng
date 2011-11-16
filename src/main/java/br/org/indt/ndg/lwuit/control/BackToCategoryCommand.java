@@ -1,6 +1,7 @@
-package br.org.indt.ndg.lwuit.ui;
+package br.org.indt.ndg.lwuit.control;
 
 import br.org.indt.ndg.lwuit.control.BackCommand;
+import br.org.indt.ndg.lwuit.ui.OpenRosaGroupScreen;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.Resources;
 import com.sun.lwuit.Command;

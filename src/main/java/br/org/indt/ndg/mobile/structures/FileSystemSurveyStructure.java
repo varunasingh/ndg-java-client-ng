@@ -58,15 +58,15 @@ public class FileSystemSurveyStructure {
         newSurveyStructure.surveyDirName = dirName;
         surveys.addElement(newSurveyStructure);
     }
-    
+
     private SurveyStructure getCurrentSurvey()
     {
         return (SurveyStructure) surveys.elementAt(currentIndex);
     }
-    
+
     private class SurveyStructure
     {
-        public SurveyStructure(String surveyDirName, String surveyName) 
+        public SurveyStructure(String surveyDirName, String surveyName)
         {
             this.surveyDirName = surveyDirName;
             this.surveyName = surveyName;

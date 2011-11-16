@@ -4,6 +4,7 @@ import br.org.indt.ndg.lwuit.ui.LoginForm;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
 import br.org.indt.ndg.lwuit.ui.NDGLookAndFeel;
 import br.org.indt.ndg.lwuit.ui.Screen;
+import br.org.indt.ndg.lwuit.ui.ServerUrlSelector;
 import java.io.IOException;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
@@ -98,9 +99,15 @@ public class AppMIDlet extends MIDlet {
 
         fileSystem = new FileSystem(AppMIDlet.getInstance().getRootDir());
         fileStores = new FileStores();
-        showLoginScreen(); //TODO
-        SecureHttpConnector.setCredentials("admin", "ndg"); //TODO move this
 
+        if(settings.getStructure().getServerUrl() == null)
+        {
+            showWelcomeScreen();
+        } else
+        {
+            showLoginScreen();
+        }
+        SecureHttpConnector.setCredentials("admin", "ndg"); //TODO move this
     }
 
     public void initLWUIT() {
@@ -197,6 +204,10 @@ public class AppMIDlet extends MIDlet {
         setDisplayable( LoginForm.class );
     }
 
+    private void showWelcomeScreen() {
+        setDisplayable( ServerUrlSelector.class );
+    }
+
     public void showEncryptionScreen() {
         if( !getSettings().getStructure().isEncryptionConfigured( ) )
             setDisplayable( br.org.indt.ndg.lwuit.ui.EncryptionConfigScreen.class);
@@ -254,8 +265,10 @@ public class AppMIDlet extends MIDlet {
     }
 
     public void setIMEI() {
-        imei = System.getProperty("com.nokia.mid.imei"); // is null on emulator
-        imei = "999966669999";
+        if(System.getProperty("com.nokia.mid.imei") != null )
+        {
+            imei = System.getProperty("com.nokia.mid.imei");
+        }
     }
 
     public String getIMEI() {
@@ -266,7 +279,7 @@ public class AppMIDlet extends MIDlet {
         return getAppProperty("MIDlet-Version");
     }
 
-    public String getDefaultServerUrl() {
+    public String getPropertyServerUrl() {
         return getAppProperty("server-url");
     }
 
@@ -274,16 +287,9 @@ public class AppMIDlet extends MIDlet {
         return getAppProperty("app-msisdn");
     }
 
-    public String[] getDefaultServlets() {
-        return new String[] {
-            getAppProperty("server-servlet_Context"),
-            getAppProperty("server-servlet_PostResults"),
-            getAppProperty("server-servlet_ReceiveSurvey"),
-            getAppProperty("server-servlet_CheckForUpdate"),
-            getAppProperty("server-servlet_RegisterIMEI"),
-            getAppProperty("server-servlet_Localization"),
-            getAppProperty("server-servlet_LanguageList")
-        };
+    public String getPropertyServerRoot() {
+        String serverRoot = getAppProperty("server-root");
+        return serverRoot != null ? serverRoot : NdgConsts.SERVER_ROOT;
     }
 
     public void setTimeTracker(long _time) {

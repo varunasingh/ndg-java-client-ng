@@ -139,8 +139,7 @@ public class DownloadNewSurveys implements Runnable {
                 fconn.create();
             }
             out = fconn.openDataOutputStream();
-            String openRosaList = AppMIDlet.getInstance().getSettings().getStructure().getReceiveSurveyURL()
-                    + "?deviceID=" + AppMIDlet.getInstance().getIMEI();
+            String openRosaList = AppMIDlet.getInstance().getSettings().getStructure().getReceiveSurveyURL();
 
             downloadResource(openRosaList, acceptableTypes, out);
             out.flush();

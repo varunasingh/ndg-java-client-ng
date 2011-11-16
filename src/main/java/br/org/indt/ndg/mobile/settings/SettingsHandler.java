@@ -43,12 +43,6 @@ public class SettingsHandler extends DefaultHandler {
                 structure.setEncryptionConfigured(0);
             }
         }
-        else if (qName.equals("server")) {
-            if (attributes.getValue(attributes.getIndex("compression")).equals("on"))
-                structure.setServerCompression(true);
-            else
-                structure.setServerCompression(false);
-        }
         else if(qName.equals("language"))
         {
             languges.addElement(new Language(attributes.getValue("name"), attributes.getValue("locale")));
@@ -121,11 +115,7 @@ public class SettingsHandler extends DefaultHandler {
 
             String qName = (String)tagStack.peek();
 
-            if (qName.equals("url_compress")) structure.setServerUrl_Compress(chars);
-            else if (qName.equals("url_normal")) structure.setServerUrl_Normal(chars);
-            else if (qName.equals("url_receive_survey")) structure.setReceiveSurveyURL(chars);
-            else if (qName.equals("url_update_check")) structure.setUpdateCheckURL(chars);
-            else if (qName.equals("url_register_imei")) structure.setRegisterIMEIUrl(chars);
+            if (qName.equals("url_server")) structure.setServerUrl(chars);
          }
     }
 

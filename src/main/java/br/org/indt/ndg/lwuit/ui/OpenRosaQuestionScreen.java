@@ -1,5 +1,6 @@
 package br.org.indt.ndg.lwuit.ui;
 
+import br.org.indt.ndg.lwuit.control.BackToCategoryCommand;
 import br.org.indt.ndg.lwuit.control.OpenFileBrowserCommand;
 import br.org.indt.ndg.lwuit.control.RemovePhotoCommand;
 import br.org.indt.ndg.lwuit.control.SaveGroupCommand;

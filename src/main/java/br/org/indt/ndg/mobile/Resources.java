@@ -100,6 +100,7 @@ public class Resources {
     public static final String DELETE_SURVEY_CONFIRMATION = Localization.getMessage("QTJ_DELETE_SURVEY_CONFIRMATION");
     public static final String IMPOSSIBLE_CREATE_ROOTDIR = Localization.getMessage("QTJ_IMPOSSIBLE_CREATE_ROOTDIR");
     public static final String ERROR_TITLE = Localization.getMessage("QTJ_ERROR_TITLE");
+    public static final String ERROR_CONNECTION = Localization.getMessage("QTJ_ERCONNECTION");
     public static final String GPS_LOCAL = Localization.getMessage("QTJ_GPS_LOCAL");
     public static final String CONNECTED = Localization.getMessage("QTJ_CONNECTED");
     public static final String LATITUDE = Localization.getMessage("QTJ_LATITUDE");
@@ -134,7 +135,8 @@ public class Resources {
     public static final String REGISTRATION_DONE = Localization.getMessage("QTJ_REGISTRATION_DONE");
     public static final String APP_REGISTERED = Localization.getMessage("QTJ_APP_REGISTERED");
     public static final String CHECK_NETWORK = Localization.getMessage("QTJ_NDG_CHECK_NTWRK");
-    public static final String CHECK_SERVER = Localization.getMessage("QTJ_NDG_CHECK_NTWRK");
+    public static final String CHECK_SERVER = Localization.getMessage("QTJ_NDG_CHECK_SERVER");
+    public static final String ENTER_SERVER_ADDRESS = Localization.getMessage("QTJ_ENTER_SERVER_ADDRESS");
     public static final String NO_ROUTE_TO_HOST = Localization.getMessage("QTJ_NDG_NO_ROUTE");
     public static final String SOFTWARE_CONN_ABORT = Localization.getMessage("QTJ_NDG_SOFTWARE_ABORT");
     public static final String CONNECTION_REFUSED = Localization.getMessage("QTJ_NDG_CONNECTION_REFUSED");
@@ -263,6 +265,9 @@ public class Resources {
     public static final String UPDATE = Localization.getMessage("QTJ_UPDATE");
     public static final String UPDATE_SUCCESS = Localization.getMessage("QTJ_UPDATE_SUCCESS");
 
+    public static final String SERVER_WIZARD = Localization.getMessage("QTJ_SERVER_WIZARD");
+    public static final String NO_SERVER = Localization.getMessage("QTJ_NO_SERVER");
+    public static final String NO_NDG_SERVER = Localization.getMessage("QTJ_NO_NDG_SERVER");
 
     private boolean error = false;
     public static Image check;

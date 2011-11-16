@@ -58,7 +58,7 @@ public class SubmitServer {
     }
 
     private void send(Vector resultFilenames, String surveyId){
-        m_servletUrl = AppMIDlet.getInstance().getSettings().getStructure().getServerUrl();
+        m_servletUrl = AppMIDlet.getInstance().getSettings().getStructure().getPostResultsUrl();
         Enumeration e = resultFilenames.elements();
         m_filesNotSent.removeAllElements();
         while ( e.hasMoreElements() && !m_canceled ) {

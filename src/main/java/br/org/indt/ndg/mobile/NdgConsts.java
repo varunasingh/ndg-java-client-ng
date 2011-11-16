@@ -5,7 +5,7 @@ package br.org.indt.ndg.mobile;
  * @author damian.janicki
  */
 public class NdgConsts {
-    
+
     public static final int NOENTRY = -99999;
 
     public static final String RESOURCE_PATH = "/resources/text/";
@@ -31,4 +31,15 @@ public class NdgConsts {
     public static String OPENROSA_STANDARD_NAME = "OpenRosa Protocol";
     public static final String DDMMYYYY = "DD/MM/YYYY";
     public static final String MMDDYYYY = "MM/DD/YYYY";
-}
+    public static final String CHECK_SERVER_SERVLET = "/checkServer";
+    public static final String SERVER_ROOT = "/ndg-server";
+    public static final String SERVLET_POST_RESULTS = "PostResults";
+    public static final String SERVLET_RECEIVE_SURVEY = "ReceiveSurvey";
+    public static final String SERVLET_CLIENT_UPDATE = "ClientUpdate";
+    public static final String SERVLET_LOCALIZATION = "LocalizationServing";
+    public static final String SERVLET_LANGUAGE_LIST = "LanguageList";
+    public static final String SERVLET_CHECK_URL = "CheckUrl";
+    public static final String CHECK_URL_RESPONSE = "NdgServer";
+    public static final String SERVLET_LANGUAGE_TEXT = "text";
+    public static final String SERVLET_LANGUAGE_FONT = "font";
+};
