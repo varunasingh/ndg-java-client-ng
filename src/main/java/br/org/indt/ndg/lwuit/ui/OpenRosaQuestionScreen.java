@@ -3,7 +3,6 @@ package br.org.indt.ndg.lwuit.ui;
 import br.org.indt.ndg.lwuit.control.BackToCategoryCommand;
 import br.org.indt.ndg.lwuit.control.OpenFileBrowserCommand;
 import br.org.indt.ndg.lwuit.control.RemovePhotoCommand;
-import br.org.indt.ndg.lwuit.control.SaveGroupCommand;
 import br.org.indt.ndg.lwuit.control.ShowPhotoCommand;
 import br.org.indt.ndg.lwuit.control.SurveysControl;
 import br.org.indt.ndg.lwuit.control.TakePhotoCommand;
@@ -15,7 +14,6 @@ import br.org.indt.ndg.lwuit.extended.RadioButton;
 import br.org.indt.ndg.lwuit.model.ImageData;
 import br.org.indt.ndg.lwuit.ui.camera.CameraManagerListener;
 import br.org.indt.ndg.lwuit.ui.camera.OpenRosaCameraManager;
-import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaConstraintHelper;
 import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaUtils;
 import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaGroup;
 import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaQuestion;
@@ -30,7 +28,6 @@ import com.nokia.xfolite.xforms.model.MIPExpr;
 import com.nokia.xfolite.xforms.model.datatypes.DataTypeBase;
 import com.nokia.xfolite.xml.dom.Node;
 import com.nokia.xfolite.xml.xpath.NodeSet;
-import com.nokia.xfolite.xml.xpath.XPathResult;
 import com.sun.lwuit.Button;
 import com.sun.lwuit.ButtonGroup;
 import com.sun.lwuit.Component;
@@ -81,7 +78,6 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
         form.setFocusScrolling( true );
 
         form.addCommand( BackToCategoryCommand.getInstance().getCommand() );
-//        form.addCommand( SaveGroupCommand.getInstance().getCommand() ); //TODO remove
 
         try {
         form.removeCommandListener( this );
@@ -178,23 +174,11 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
     public void actionPerformed( ActionEvent ae ) {
         Object cmd = ae.getSource();
         if ( cmd == BackToCategoryCommand.getInstance().getCommand() ) {
-//            GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_YES_NO, true);
-//            if( isFormChanged() &&  GeneralAlert.RESULT_YES ==  GeneralAlert.getInstance().show( Resources.CMD_SAVE,
-//                                             Resources.SAVE_SURVEY_QUESTION,
-//                                             GeneralAlert.CONFIRMATION)){
-//                saveCategory();
-//            }else{
-//
-//            }
             if( isFormChanged() && commitValues() ){
                 group.setChanged( true );
             }
             BackToCategoryCommand.getInstance().execute( null );
-//            BackToCategoryCommand.getInstance().execute( null );
         }
-//        else if( cmd == SaveGroupCommand.getInstance().getCommand() ) {
-//
-//        }
     }
 
 
@@ -232,6 +216,7 @@ abstract class ContainerUI extends Container implements FocusListener {
     }
 
     public ContainerUI(BoundElement element) {
+
         getStyle().setBorder(Border.createBevelLowered(NDGStyleToolbox.getInstance().focusLostColor,
                 NDGStyleToolbox.getInstance().focusLostColor,
                 NDGStyleToolbox.getInstance().focusLostColor,
@@ -271,17 +256,6 @@ abstract class ContainerUI extends Container implements FocusListener {
 
         GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
         if (constraint != null && !constraint.equals( "" ) ) {
-
-//            String lowConstraint = "";
-//            String highConstraint = "";
-//            if(element.getDataType().getBaseTypeID() == DataTypeBase.XML_SCHEMAS_DATE){
-//                lowConstraint = OpenRosaConstraintHelper.getInstance().getDateLowConstraint(constraint);
-//                highConstraint = OpenRosaConstraintHelper.getInstance().getDateHighConstraint(constraint);
-//            }else{
-//                lowConstraint = OpenRosaConstraintHelper.getInstance().getLowConstraint(constraint);
-//                highConstraint = OpenRosaConstraintHelper.getInstance().getHighConstraint(constraint);
-//            }
-
             GeneralAlert.getInstance().show(
                                         Resources.CMD_SAVE,
                                         constraint,
@@ -481,8 +455,7 @@ class XfoilDescriptiveFieldUI extends ContainerUI {
     private void addDescriptionQuestion(BoundElement bindElem) {
         String strValue = bindElem.getStringValue().trim();
 
-        tfDesc = new DescriptiveField(OpenRosaConstraintHelper.getInstance().
-                getMaxStringLength(element));
+        tfDesc = new DescriptiveField();
         tfDesc.setInputMode("Abc");
         tfDesc.setEditable(true);
         tfDesc.setFocusable(true);
@@ -578,6 +551,8 @@ class XfoilDateFieldUI extends ContainerUI {
         dfDate.setDate(date);
         dfDate.setEditable(true);
         dfDate.addFocusListener(this);
+
+
 
         addComponent(dfDate);
     }

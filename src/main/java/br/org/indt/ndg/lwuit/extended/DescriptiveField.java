@@ -13,9 +13,17 @@ public class DescriptiveField extends TextField implements DataChangedListener {
 
     private int length;
 
+    public DescriptiveField() {
+        init( 0 );
+    }
+
     public DescriptiveField(int length) {
         super();
-        this.length = length;
+        init( length );
+    }
+
+    private void init( int lenght ){
+        this.length = lenght;
         setInputMode("abc");
         setGrowByContent(true);
         setSingleLineTextArea(false);
@@ -23,9 +31,10 @@ public class DescriptiveField extends TextField implements DataChangedListener {
     }
 
     private void checkLength() {
-        String text = "" + getText();
-        if (text.length()> length) {
-            text = text.substring(0, length);
+        String text = getText();
+
+        if (length > 0 && text.length() > length) {
+            text = text.substring( 0, length );
             setText(text);
         }
     }
