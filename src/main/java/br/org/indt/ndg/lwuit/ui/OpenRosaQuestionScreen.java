@@ -26,9 +26,11 @@ import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.multimedia.Base64Coder;
 import com.nokia.xfolite.xforms.dom.BoundElement;
 import com.nokia.xfolite.xforms.dom.XFormsElement;
+import com.nokia.xfolite.xforms.model.MIPExpr;
 import com.nokia.xfolite.xforms.model.datatypes.DataTypeBase;
 import com.nokia.xfolite.xml.dom.Node;
 import com.nokia.xfolite.xml.xpath.NodeSet;
+import com.nokia.xfolite.xml.xpath.XPathResult;
 import com.sun.lwuit.Button;
 import com.sun.lwuit.ButtonGroup;
 import com.sun.lwuit.Component;
@@ -79,7 +81,7 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
         form.setFocusScrolling( true );
 
         form.addCommand( BackToCategoryCommand.getInstance().getCommand() );
-        form.addCommand( SaveGroupCommand.getInstance().getCommand() );
+//        form.addCommand( SaveGroupCommand.getInstance().getCommand() ); //TODO remove
 
         try {
         form.removeCommandListener( this );
@@ -111,11 +113,13 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
                     break;
                 default:
             }
-            if(comp != null){
+            if(comp != null ){
+                comp.setParent( this );
                 containers.addElement( comp );
                 form.addComponent( comp );
             }
         }
+        refreshAll();
     }
 
     private ContainerUI createInput(BoundElement bindElem) {
@@ -174,24 +178,29 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
     public void actionPerformed( ActionEvent ae ) {
         Object cmd = ae.getSource();
         if ( cmd == BackToCategoryCommand.getInstance().getCommand() ) {
-            GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_YES_NO, true);
-            if( isFormChanged() &&  GeneralAlert.RESULT_YES ==  GeneralAlert.getInstance().show( Resources.CMD_SAVE,
-                                             Resources.SAVE_SURVEY_QUESTION,
-                                             GeneralAlert.CONFIRMATION)){
-                saveCategory();
-            }else{
-                BackToCategoryCommand.getInstance().execute( null );
+//            GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_YES_NO, true);
+//            if( isFormChanged() &&  GeneralAlert.RESULT_YES ==  GeneralAlert.getInstance().show( Resources.CMD_SAVE,
+//                                             Resources.SAVE_SURVEY_QUESTION,
+//                                             GeneralAlert.CONFIRMATION)){
+//                saveCategory();
+//            }else{
+//
+//            }
+            if( isFormChanged() && commitValues() ){
+                group.setChanged( true );
             }
-
-        } else if( cmd == SaveGroupCommand.getInstance().getCommand() ) {
-            saveCategory();
+            BackToCategoryCommand.getInstance().execute( null );
+//            BackToCategoryCommand.getInstance().execute( null );
         }
+//        else if( cmd == SaveGroupCommand.getInstance().getCommand() ) {
+//
+//        }
     }
 
-    private void saveCategory(){
-        if( commitValues() ){
-            group.setChanged( true );
-            BackToCategoryCommand.getInstance().execute( null );
+
+    public void refreshAll(){
+        for(int idx = 0; idx < containers.size(); idx++ ){
+            ((ContainerUI)containers.elementAt( idx )).refresh();
         }
     }
 }
@@ -200,16 +209,24 @@ abstract class ContainerUI extends Container implements FocusListener {
 
     protected TextArea qname;
     protected BoundElement element;
+    protected OpenRosaQuestionScreen parentScreen = null;
 
     protected void commitValue(String input) {
         element.setStringValue(input);
+        element.getModel().recalculate();
+
+        if( parentScreen != null ){
+            parentScreen.refreshAll();
+        }
     }
 
     public abstract boolean isChanged();
 
     public abstract void commitValue();
 
-    public abstract void setEnabled(boolean enabled);
+    public void setEnabled( boolean enabled ){
+        qname.setEnabled( enabled );
+    }
 
     public void handleMoreDetails(Object cmd) {
     }
@@ -227,12 +244,23 @@ abstract class ContainerUI extends Container implements FocusListener {
     protected void addQuestionName() {
 
         addComponent( new Label("") );
-        TextArea questionName = UIUtils.createQuestionName( OpenRosaSurvey.getResourceManager().tryGetLabelForElement( element ) );
+        qname = UIUtils.createQuestionName( OpenRosaSurvey.getResourceManager().tryGetLabelForElement( element ) );
 
-        this.addComponent( questionName );
+        this.addComponent( qname );
     }
 
-    protected abstract boolean validate();
+    public void refresh(){
+        boolean relevant = element.getBooleanState( MIPExpr.RELEVANT );
+        setEnabled( relevant );
+    }
+    public void setParent( OpenRosaQuestionScreen screen ){
+        this.parentScreen = screen;
+    }
+
+    protected boolean validate(){
+        commitValue();
+        return element.getBooleanState( MIPExpr.CONSTRAINT );
+    }
 
     public BoundElement getElement() {
         return element;
@@ -240,23 +268,23 @@ abstract class ContainerUI extends Container implements FocusListener {
 
     public void showBadInputError() {
         String constraint = element.getConstraintString();
-        GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-        if (constraint != null) {
 
-            String lowConstraint = "";
-            String highConstraint = "";
-            if(element.getDataType().getBaseTypeID() == DataTypeBase.XML_SCHEMAS_DATE){
-                lowConstraint = OpenRosaConstraintHelper.getInstance().getDateLowConstraint(constraint);
-                highConstraint = OpenRosaConstraintHelper.getInstance().getDateHighConstraint(constraint);
-            }else{
-                lowConstraint = OpenRosaConstraintHelper.getInstance().getLowConstraint(constraint);
-                highConstraint = OpenRosaConstraintHelper.getInstance().getHighConstraint(constraint);
-            }
+        GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+        if (constraint != null && !constraint.equals( "" ) ) {
+
+//            String lowConstraint = "";
+//            String highConstraint = "";
+//            if(element.getDataType().getBaseTypeID() == DataTypeBase.XML_SCHEMAS_DATE){
+//                lowConstraint = OpenRosaConstraintHelper.getInstance().getDateLowConstraint(constraint);
+//                highConstraint = OpenRosaConstraintHelper.getInstance().getDateHighConstraint(constraint);
+//            }else{
+//                lowConstraint = OpenRosaConstraintHelper.getInstance().getLowConstraint(constraint);
+//                highConstraint = OpenRosaConstraintHelper.getInstance().getHighConstraint(constraint);
+//            }
 
             GeneralAlert.getInstance().show(
                                         Resources.CMD_SAVE,
-                                        Resources.OR_VALID_INPUT_FROM + " " + lowConstraint
-                                        + " " + Resources.TO + " " + highConstraint,
+                                        constraint,
                                         GeneralAlert.WARNING);
 
         } else {
@@ -354,10 +382,13 @@ class XfoilPhotoFieldUi extends ContainerUI implements  ActionListener, CameraMa
 
     public void commitValue() {
 //        element.setStringValue(OpenRosaCameraManager.getInstance().getImageStringValue());
-        commitValue(OpenRosaCameraManager.getInstance().getImageStringValue());
+        commitValue( OpenRosaCameraManager.getInstance().getImageStringValue() );
     }
 
     public void setEnabled(boolean enabled) {
+        super.setEnabled( enabled );
+        mImageContainer.setEnabled( enabled );
+        imageButton.setEnabled( enabled );
     }
 
     protected boolean validate() {
@@ -434,13 +465,9 @@ class XfoilDescriptiveFieldUI extends ContainerUI {
         commitValue(tfDesc.getText());
     }
 
-    protected boolean validate() {
-        return OpenRosaConstraintHelper.getInstance().
-                validateConstraint(tfDesc.getText(), element);
-    }
-
     public void setEnabled(boolean enabled) {
-        //     throw new UnsupportedOperationException("Not supported yet.");
+        super.setEnabled( enabled );
+        tfDesc.setEnabled( enabled );
     }
 
     public boolean isChanged(){
@@ -462,6 +489,7 @@ class XfoilDescriptiveFieldUI extends ContainerUI {
         if (strValue != null) {
             tfDesc.setText(strValue);
         }
+        tfDesc.addFocusListener(this);
         this.addComponent(tfDesc);
     }
 }
@@ -480,14 +508,12 @@ class XfoilNumericFieldUI extends ContainerUI {
         commitValue(nfNumber.getText());
     }
 
-    protected boolean validate() {
-        return OpenRosaConstraintHelper.getInstance().
-                validateConstraint(nfNumber.getText(), element);
+    public void setEnabled(boolean enabled) {
+        super.setEnabled( enabled );
+        nfNumber.setEnabled( enabled );
     }
 
-    public void setEnabled(boolean enabled) {
-     //   throw new UnsupportedOperationException("Not supported yet.");
-    }
+
     public boolean isChanged(){
         if(nfNumber.getText().equals(element.getStringValue())){
             return false;
@@ -521,19 +547,9 @@ class XfoilDateFieldUI extends ContainerUI {
         commitValue(OpenRosaUtils.getStringFromDate(dfDate.getDate()));
     }
 
-    protected boolean validate() {
-        boolean retVal = OpenRosaConstraintHelper.getInstance().
-                validateDate(element.getConstraintString(), dfDate.getDate());
-
-        if(!retVal){
-            long date = Calendar.getInstance().getTime().getTime();
-            dfDate.setDate(new Date(date));
-            this.repaint();
-        }
-        return retVal;
-    }
-
-    public void setEnabled(boolean enabled) {
+    public void setEnabled( boolean enabled ) {
+        super.setEnabled( enabled );
+        dfDate.setEnabled( enabled );
     }
 
     public boolean isChanged(){
@@ -627,13 +643,11 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
         return values;
     }
 
-    protected boolean validate() {
-        // maybe required atttr
-        return true;
-    }
-
-    public void setEnabled(boolean enabled) {
-        //   throw new UnsupportedOperationException("Not supported yet.");
+    public void setEnabled( boolean enabled ) {
+        super.setEnabled( enabled );
+        for (int i = 0; i < cbs.size(); i++) {
+            ((CheckBox)cbs.elementAt(i)).setEnabled( enabled );
+        }
     }
 
     public boolean isChanged(){
@@ -717,13 +731,11 @@ class XfoilExclusiveChoiceFieldUI extends ContainerUI {
         }
     }
 
-    protected boolean validate() {
-        // maybe required atttr
-        return true;
-    }
-
     public void setEnabled(boolean enabled) {
-      //  throw new UnsupportedOperationException("Not supported yet.");
+        super.setEnabled( enabled );
+        for ( int i = 0; i < groupButton.getButtonCount(); i++ ){
+            groupButton.getRadioButton( i ).setEnabled( false );
+        }
     }
 
     private void addSelect1Question(BoundElement bindElem) {
@@ -796,7 +808,8 @@ class XfoilMockComponent extends ContainerUI {
     }
 
     public void setEnabled(boolean enabled) {
-     //   throw new UnsupportedOperationException("Not supported yet.");
+        super.setEnabled( enabled );
+        //do nothing
     }
 
     private void addMockLabel() {
