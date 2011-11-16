@@ -21,17 +21,17 @@ import javax.microedition.midlet.MIDletStateChangeException;
  *
  * @author damian.janicki
  */
-public class SelectLangScreen extends Screen implements ActionListener, 
+public class SelectLangScreen extends Screen implements ActionListener,
                                 ChoiceGroupListener,
                                 LocalizationDownloaderListener,
                                 LangListDownloaderListener,
                                 ChoiceGroupSelectionListener {
-    
+
     private Vector/*<Language>*/ languagesList = null;
     private LangChoiceGroup langChoice = null;
     private int currentLangIndex = 0;
 
-    protected void loadData() {   
+    protected void loadData() {
     }
 
     protected void customize() {
@@ -56,7 +56,7 @@ public class SelectLangScreen extends Screen implements ActionListener,
         if(languagesList.size() == 0){
             return;
         }
-        
+
         String currentLang = AppMIDlet.getInstance().getSettings().getStructure().getLanguage();
 
         currentLangIndex = 0;
@@ -78,7 +78,7 @@ public class SelectLangScreen extends Screen implements ActionListener,
         // to prevent scrolling on top of the settings list
         langChoice.setSelectedIndex(currentLangIndex);
         langChoice.blockLosingFocusUp();
-        
+
         form.addComponent(langChoice);
         form.setFocused(langChoice);
         langChoice.setItemFocused(currentLangIndex);
@@ -166,18 +166,18 @@ public class SelectLangScreen extends Screen implements ActionListener,
     public void downloadFailed(){
         langChoice.setSelectedIndex(currentLangIndex);
         langChoice.setItemFocused(currentLangIndex);
-        
+
         GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
         GeneralAlert.getInstance().show(Resources.WARNING_TITLE, Resources.DOWNLOAD_LOCALE_FAILED, GeneralAlert.WARNING);
     }
 
     public void langListDownloadFinished() {
-        Vector newLangList = AppMIDlet.getInstance().getSettings().getStructure().getLanguages();        
+        Vector newLangList = AppMIDlet.getInstance().getSettings().getStructure().getLanguages();
         Vector difference = getDiffrence(languagesList, newLangList);
 
         String messageStr = "";
         if(difference.size() > 0){
-            messageStr = Resources.NEW_LANGUAGES + ":\n"; 
+            messageStr = Resources.NEW_LANGUAGES + ":\n";
             for( int idx = 0; idx < difference.size(); idx++ ){
                 messageStr += ((Language)difference.elementAt(idx)).getLangName();
                 if( idx != difference.size() -1 ){
@@ -190,7 +190,7 @@ public class SelectLangScreen extends Screen implements ActionListener,
 
         GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
         GeneralAlert.getInstance().show(Resources.LANGUAGE, messageStr, GeneralAlert.INFO);
-        
+
         reloadChoiceList();
     }
 
@@ -214,7 +214,7 @@ public class SelectLangScreen extends Screen implements ActionListener,
     }
 
     public void itemSelected(int i) {
-        if(i < languagesList.size()){ 
+        if(i < languagesList.size()){
             Language lang = (Language)languagesList.elementAt(i);
             if(i > 0 && lang.downloaded() ){
                 updateCommands(true);

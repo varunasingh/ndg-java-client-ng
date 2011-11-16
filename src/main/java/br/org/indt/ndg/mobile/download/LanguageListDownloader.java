@@ -7,16 +7,12 @@ import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.structures.Language;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Vector;
-import javax.microedition.io.Connector;
-import javax.microedition.io.HttpConnection;
 
 public class LanguageListDownloader implements Runnable {
 
     private String urlAck;
-    private static int MAX_LIST_SIZE = 10000;
     private Vector/*<Language>*/ languages = new Vector();
     private LangListDownloaderListener listener = null;
 
@@ -30,12 +26,10 @@ public class LanguageListDownloader implements Runnable {
     }
 
     private void updateRequestUrls() {
-        String urlBase = AppMIDlet.getInstance().getSettings().getStructure().getLanguageListURL();
-        urlAck = urlBase + "?do=ack&imei=" + AppMIDlet.getInstance().getIMEI();
+        urlAck = AppMIDlet.getInstance().getSettings().getStructure().getLanguageListURL();
     }
 
-    public void getLanguageList()
-    {
+    public void getLanguageList() {
         WaitingScreen.show(Resources.CONNECTING);
         Thread thisThread = new Thread(this);
         thisThread.setPriority( Thread.MIN_PRIORITY );
@@ -54,7 +48,7 @@ public class LanguageListDownloader implements Runnable {
         }
     }
 
-    private boolean downloadList(){
+    private boolean downloadList() {
         ByteArrayOutputStream bytestream = null;
         boolean downloaded = false;
         try {
@@ -100,7 +94,5 @@ public class LanguageListDownloader implements Runnable {
             index = endLine + 1;
         }
     }
-
-
 }
 

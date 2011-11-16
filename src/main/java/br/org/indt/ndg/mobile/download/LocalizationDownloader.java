@@ -1,6 +1,5 @@
 package br.org.indt.ndg.mobile.download;
 
-import br.org.indt.ndg.lwuit.ui.GeneralAlert;
 import br.org.indt.ndg.lwuit.ui.WaitingScreen;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.NdgConsts;
@@ -8,10 +7,8 @@ import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.Utils;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Hashtable;
 import javax.microedition.io.Connector;
-import javax.microedition.io.HttpConnection;
 import javax.microedition.io.file.FileConnection;
 
 
@@ -22,20 +19,11 @@ public class LocalizationDownloader implements Runnable {
     private static final String FILE_TYPE_HEADER = "File-Type";
     private static final String LOCALE_HEADER = "locale";
 
-    private HttpConnection httpConnection;
-    private String urlAck;
     private String locale;
-    private static int MTU = 1024;
     private LocalizationDownloaderListener listener = null;
 
     public LocalizationDownloader(LocalizationDownloaderListener listener) {
         this.listener = listener;
-        updateRequestUrls();
-    }
-
-    private void updateRequestUrls() {
-        String urlBase = AppMIDlet.getInstance().getSettings().getStructure().getLocalizationServingURL();
-        urlAck = urlBase + "?do=ack&imei=" + AppMIDlet.getInstance().getIMEI();
     }
 
     public void downloadLocale(String locale){
@@ -48,8 +36,10 @@ public class LocalizationDownloader implements Runnable {
 
     public void run() {
         try { Thread.sleep(200); } catch(Exception e){}
-        if(downloadFile(urlAck, FILE_TYPE_TEXTS)){
-            downloadFile(urlAck, FILE_TYPE_FONTS);
+        if(downloadFile( AppMIDlet.getInstance().getSettings().getStructure().getLocalizationServingTextURL()
+                       + "?" + LOCALE_HEADER + "=" + locale, FILE_TYPE_TEXTS )){
+            downloadFile( AppMIDlet.getInstance().getSettings().getStructure().getLocalizationServingFontURL()
+                        + "?" + LOCALE_HEADER + "=" + locale, FILE_TYPE_FONTS);
             WaitingScreen.dispose();
             listener.localizationDowonloadFinished(locale);
         }else{
