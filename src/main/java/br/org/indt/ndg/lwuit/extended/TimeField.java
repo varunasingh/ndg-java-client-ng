@@ -80,7 +80,7 @@ public class TimeField extends TextField implements DataChangedListener, FocusLi
 
     private void buildTime() {
         Calendar calendar = Calendar.getInstance();
-        
+
         if ((timeFormat == HHMM)) {
             calendar.set(Calendar.HOUR, Integer.parseInt(timeFields[0]));
             calendar.set(Calendar.MINUTE, Integer.parseInt(timeFields[1]));
@@ -195,7 +195,7 @@ public class TimeField extends TextField implements DataChangedListener, FocusLi
                         if (getField(2).length() != 1)
                             selectMode = false;
                         setField(getFieldSelected(), getField(getFieldSelected()) + c);
-                   
+
                         if (getField(2).length() == 2) {
                             setFieldSelected(1);
                         }

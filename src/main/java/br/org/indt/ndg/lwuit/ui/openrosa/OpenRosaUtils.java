@@ -83,14 +83,14 @@ public class OpenRosaUtils {
 
 
     private static String intToString(int num, int digitsNumber) {
-    String baseNumber = String.valueOf(num);
-    StringBuffer retval = new StringBuffer(baseNumber);
-    for(int i = 0 ; i <  digitsNumber - baseNumber.length(); i++)
-    {
-        retval.insert(0, "0");
+        String baseNumber = String.valueOf(num);
+        StringBuffer retval = new StringBuffer(baseNumber);
+        for(int i = 0 ; i <  digitsNumber - baseNumber.length(); i++)
+        {
+            retval.insert(0, "0");
+        }
+        return retval.toString();
     }
-    return retval.toString();
-}
 
     /**
      *

@@ -11,6 +11,7 @@ import br.org.indt.ndg.lwuit.extended.DateField;
 import br.org.indt.ndg.lwuit.extended.DescriptiveField;
 import br.org.indt.ndg.lwuit.extended.NumericField;
 import br.org.indt.ndg.lwuit.extended.RadioButton;
+import br.org.indt.ndg.lwuit.extended.TimeField;
 import br.org.indt.ndg.lwuit.model.ImageData;
 import br.org.indt.ndg.lwuit.ui.camera.CameraManagerListener;
 import br.org.indt.ndg.lwuit.ui.camera.OpenRosaCameraManager;
@@ -26,6 +27,7 @@ import com.nokia.xfolite.xforms.dom.BoundElement;
 import com.nokia.xfolite.xforms.dom.XFormsElement;
 import com.nokia.xfolite.xforms.model.MIPExpr;
 import com.nokia.xfolite.xforms.model.datatypes.DataTypeBase;
+import com.nokia.xfolite.xforms.model.datatypes.DataTypeDate;
 import com.nokia.xfolite.xml.dom.Node;
 import com.nokia.xfolite.xml.xpath.NodeSet;
 import com.sun.lwuit.Button;
@@ -128,6 +130,7 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
                     question = new XfoilDateFieldUI(bindElem);
                     break;
                 case DataTypeBase.XML_SCHEMAS_TIME:
+                    question = new XfoilTimeFieldUI(bindElem);
                     break;
                 case DataTypeBase.XML_SCHEMAS_STRING:
                     question = new XfoilDescriptiveFieldUI(bindElem);
@@ -486,7 +489,6 @@ class XfoilNumericFieldUI extends ContainerUI {
         nfNumber.setEnabled( enabled );
     }
 
-
     public boolean isChanged(){
         if(nfNumber.getText().equals(element.getStringValue())){
             return false;
@@ -552,46 +554,58 @@ class XfoilDateFieldUI extends ContainerUI {
         dfDate.setEditable(true);
         dfDate.addFocusListener(this);
 
-
-
         addComponent(dfDate);
     }
 
 }
 
-//class XfoilTimeFieldUI extends ContainerUI {
-//    TimeField dfTime;
-//
-//    public XfoilTimeFieldUI(BoundElement element) {
-//        super(element);
-//        addQuestionName();
-//        addTimeQuestion(element);
-//    }
-//
-//    public void commitValue() {
-//         element.setStringValue(dfTime.getText());
-//    }
-//
-//    protected boolean validate() {
-//        return true;
-//    }
-//
-//    public void setEnabled(boolean enabled) {
-//     //   throw new UnsupportedOperationException("Not supported yet.");
-//    }
-//
-//    private void addTimeQuestion(BoundElement bindElem) {
-//        String value = bindElem.getStringValue().trim();
-//        if (value != null && (value == null ? "" != null : !value.equals(""))) {
-//            //dfTime = new TimeField(value, TimeField.HHMM, ':');
-//
-//        } else {
-//            dfTime = new TimeField(TimeField.HHMM);
-//        }
-//        dfTime.setEditable(true);
-//        addComponent(dfTime);
-//    }
-//}
+class XfoilTimeFieldUI extends ContainerUI {
+    TimeField dfTime;
+
+    public XfoilTimeFieldUI(BoundElement element) {
+        super(element);
+        addQuestionName();
+        addTimeQuestion(element);
+    }
+
+    public void commitValue() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime( dfTime.getTime() );
+        commitValue( DataTypeDate.calendar2xsdTime( cal ) );
+    }
+
+    public void setEnabled(boolean enabled) {
+        super.setEnabled( enabled );
+        dfTime.setEnabled( enabled );
+    }
+
+    private void addTimeQuestion(BoundElement bindElem) {
+        String value = bindElem.getStringValue().trim();
+        if (value != null && (value == null ? "" != null : !value.equals(""))) {
+            dfTime = new TimeField( DataTypeDate.xsdTime2Calendar( value ).getTime(), TimeField.HHMM, ':');
+        } else {
+            dfTime = new TimeField(TimeField.HHMM);
+        }
+        dfTime.setEditable(true);
+        addComponent(dfTime);
+    }
+
+    public boolean isChanged() {
+        Date timeUi = dfTime.getTime();
+        String savedTime = element.getStringValue();
+
+        if( savedTime == null || savedTime.length() <=0 ) {
+            return true;
+        }
+
+        Date timeXml = DataTypeDate.xsdTime2Calendar( savedTime ).getTime();
+        if( timeUi.equals( timeXml ) ) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+}
 
 class XfoilMultipleChoiceFieldUI extends ContainerUI {
 
