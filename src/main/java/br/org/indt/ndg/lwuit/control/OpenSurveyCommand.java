@@ -7,7 +7,6 @@ import br.org.indt.ndg.mobile.FileSystem;
 import br.org.indt.ndg.mobile.NdgConsts;
 import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.ResultList;
-import br.org.indt.ndg.mobile.SurveyList;
 import com.sun.lwuit.Command;
 
 /**
@@ -51,7 +50,7 @@ public class OpenSurveyCommand extends CommandControl {
 
             try { Thread.sleep(200); } catch (InterruptedException ex) { ex.printStackTrace(); }
 
-            System.out.println("Name: "+ AppMIDlet.getInstance().getRootDir() + AppMIDlet.getInstance().getFileSystem().getSurveyDirName() + NdgConsts.SURVEY_NAME);
+            System.out.println("Name: "+ AppMIDlet.getInstance().getFileSystem().getRoot() + AppMIDlet.getInstance().getFileSystem().getSurveyDirName() + NdgConsts.SURVEY_NAME);
 
             try {
                 AppMIDlet.getInstance().getFileStores().createSurveyStructure();

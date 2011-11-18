@@ -268,6 +268,7 @@ public class Resources {
     public static final String SERVER_WIZARD = Localization.getMessage("QTJ_SERVER_WIZARD");
     public static final String NO_SERVER = Localization.getMessage("QTJ_NO_SERVER");
     public static final String NO_NDG_SERVER = Localization.getMessage("QTJ_NO_NDG_SERVER");
+    public static final String SERVERURL = Localization.getMessage("QTJ_SERVERURL");
 
     private boolean error = false;
     public static Image check;

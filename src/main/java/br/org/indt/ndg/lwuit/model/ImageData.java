@@ -21,7 +21,7 @@ public class ImageData {
     final public static int THUMBNAIL_SIZE = 50;
 
     // This directory is used to store original images in case user decides to revert the changes
-    private String imgDir = AppMIDlet.getInstance().getRootDir()
+    private String imgDir = AppMIDlet.getInstance().getFileSystem().getRoot()
                           + AppMIDlet.getInstance().getFileSystem().getSurveyDirName()
                           + "imgTmp/";
 
@@ -67,7 +67,7 @@ public class ImageData {
         String outPath = null;
         FileConnection fileout = null;
         try {
-            outPath = AppMIDlet.getInstance().getRootDir()
+            outPath = AppMIDlet.getInstance().getFileSystem().getRoot()
                            + AppMIDlet.getInstance().getFileSystem().getSurveyDirName()
                            + "b_"
                            + AppMIDlet.getInstance().getFileSystem().getResultFilename()

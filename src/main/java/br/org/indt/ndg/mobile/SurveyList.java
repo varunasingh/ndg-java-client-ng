@@ -37,6 +37,4 @@ public class SurveyList {
             surveyList.addElement((String) e.nextElement());
         }
     }
-
-    //public void reload
 }

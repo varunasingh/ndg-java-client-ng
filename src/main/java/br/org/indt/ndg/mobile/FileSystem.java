@@ -31,6 +31,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 public class FileSystem {
     private String root = null;
+    private String serverDir = null;
     private boolean error = false;
     private int resultListIndex;
     // used to distinguish which result list should be used
@@ -89,8 +90,10 @@ public class FileSystem {
         fsSurveyStructure = new FileSystemSurveyStructure();
         fsResultStructure = new FileSystemResultStructure();
         fsSentStructure = new FileSystemResultStructure();
+    }
 
-        this.loadSurveyFiles();
+    public void setCurrentServer( String serverDir ) {
+        this.serverDir = serverDir;
     }
 
     public void setLocalFile(boolean _bool) {
@@ -178,7 +181,7 @@ public class FileSystem {
     }
 
     public void loadSurveyInfo(String _dirName) {
-        String name = parseSurveyFileInfo(root + _dirName + NdgConsts.SURVEY_NAME);
+        String name = parseSurveyFileInfo(getRoot() + _dirName + NdgConsts.SURVEY_NAME);
         fsSurveyStructure.addSurveyInfo(_dirName, name);
     }
 
@@ -256,7 +259,7 @@ public class FileSystem {
             this.removeFile(filename);
         }
         try {
-            FileConnection fc = (FileConnection) Connector.open(root + fsSurveyStructure.getDirName() + filename);
+            FileConnection fc = (FileConnection) Connector.open(getRoot() + fsSurveyStructure.getDirName() + filename);
             if (fc.exists()) {
                 fc.delete();
             }
@@ -274,12 +277,12 @@ public class FileSystem {
     public void deleteSurveyDir(String dirname) {
         FileConnection fcFile = null;
         try {
-            FileConnection fc = (FileConnection) Connector.open(root + dirname);
+            FileConnection fc = (FileConnection) Connector.open(getRoot() + dirname);
             Enumeration filelist = fc.list("*", true);
             String fileName = null;
             while(filelist.hasMoreElements()) {
                 fileName = (String) filelist.nextElement();
-                fcFile = (FileConnection) Connector.open(root + dirname + fileName);
+                fcFile = (FileConnection) Connector.open(getRoot() + dirname + fileName);
                 if ( fcFile.exists()) {
                     if( fcFile.isDirectory() ) {
                         fcFile.close();
@@ -313,7 +316,7 @@ public class FileSystem {
         }
         FileConnection directory = null;
         try {
-            directory = (FileConnection) Connector.open(root + fsSurveyStructure.getDirName() + dirname);
+            directory = (FileConnection) Connector.open(getRoot() + fsSurveyStructure.getDirName() + dirname);
             if( directory.exists() ) {
                 Enumeration filelist = directory.list("*", true);
                 String fileName = null;
@@ -321,7 +324,7 @@ public class FileSystem {
                     fileName = (String) filelist.nextElement();
                     FileConnection file = null;
                     try {
-                        file = (FileConnection) Connector.open(root + fsSurveyStructure.getDirName() + dirname + fileName);
+                        file = (FileConnection) Connector.open(getRoot() + fsSurveyStructure.getDirName() + dirname + fileName);
                         if (file.exists()) {
                             file.delete();
                         }
@@ -353,7 +356,7 @@ public class FileSystem {
     }
 
     public void moveSentResult(String _filename) {
-        String path = root + fsSurveyStructure.getDirName() + _filename;
+        String path = getRoot() + fsSurveyStructure.getDirName() + _filename;
         moveResult(path, _filename, "s_");
     }
 
@@ -382,7 +385,7 @@ public class FileSystem {
 
     public void moveUnsentResult(String _filename) {
         try {
-            FileConnection fc = (FileConnection) Connector.open(root + fsSurveyStructure.getDirName() + _filename);
+            FileConnection fc = (FileConnection) Connector.open(getRoot() + fsSurveyStructure.getDirName() + _filename);
             if (fc.exists()) {
                 if (_filename.startsWith("s_") ) {
                     String newname = _filename.substring(2);
@@ -400,7 +403,7 @@ public class FileSystem {
 
     public void moveCorruptedResult(String _filename) {
         try {
-            FileConnection fc = (FileConnection) Connector.open(root + fsSurveyStructure.getDirName() + _filename);
+            FileConnection fc = (FileConnection) Connector.open(getRoot() + fsSurveyStructure.getDirName() + _filename);
             if (fc.exists()) {
                 fc.rename("c_" + _filename);
             }
@@ -415,7 +418,7 @@ public class FileSystem {
         Vector sentFilenames = new Vector();
 
         try {
-            FileConnection fc = (FileConnection) Connector.open(root + fsSurveyStructure.getDirName());
+            FileConnection fc = (FileConnection) Connector.open(getRoot() + fsSurveyStructure.getDirName());
             Enumeration filelist = fc.list("s_*", true);
             String fileName;
 
@@ -433,7 +436,8 @@ public class FileSystem {
 
     public void loadSurveyFiles() {
         try {
-            FileConnection fc1 = (FileConnection) Connector.open(root);
+            fsSurveyStructure = new FileSystemSurveyStructure();
+            FileConnection fc1 = (FileConnection) Connector.open(getRoot());
             FileConnection fc2 = null;
             FileConnection fc3 = null;
             String dirName;
@@ -441,11 +445,11 @@ public class FileSystem {
             Enumeration filelist1 = fc1.list("*", true);
             while(filelist1.hasMoreElements()) {
                 dirName = (String) filelist1.nextElement();
-                fc2 = (FileConnection) Connector.open(root + dirName);
+                fc2 = (FileConnection) Connector.open(getRoot() + dirName);
                 if ( fc2.isDirectory() &&  Utils.isXformDir(dirName)) {
-                    fc3 = (FileConnection) Connector.open(root + dirName + NdgConsts.SURVEY_NAME);
+                    fc3 = (FileConnection) Connector.open(getRoot() + dirName + NdgConsts.SURVEY_NAME);
                     if (fc3.exists() ) {
-                        this.loadSurveyInfo(dirName);
+                        loadSurveyInfo(dirName);
                     } else {
 //                        error = true;
                     }
@@ -471,7 +475,7 @@ public class FileSystem {
         rh.setFileSystemResultFilename(_filename);
 
         Parser parser = new Parser(rh);
-        parser.parseFile(root + fsSurveyStructure.getDirName() + _filename);
+        parser.parseFile(getRoot() + fsSurveyStructure.getDirName() + _filename);
     }
 
     private void loadSentInfo(String _filename) {
@@ -480,7 +484,7 @@ public class FileSystem {
         rh.setFileSystemResultFilename(_filename);
 
         Parser parser = new Parser(rh);
-        parser.parseFile(root + fsSurveyStructure.getDirName() + _filename);
+        parser.parseFile(getRoot() + fsSurveyStructure.getDirName() + _filename);
     }
 
     public void loadSentFiles() {
@@ -491,7 +495,7 @@ public class FileSystem {
 
     private void loadSentFiles(String filter){
         try {
-            FileConnection fc = (FileConnection) Connector.open(root + fsSurveyStructure.getDirName());
+            FileConnection fc = (FileConnection) Connector.open(getRoot() + fsSurveyStructure.getDirName());
             Enumeration filelist = fc.list(filter + "*", true);
             String fileName;
             while(filelist.hasMoreElements()) {
@@ -511,7 +515,7 @@ public class FileSystem {
         fsResultStructure.reset();
 
         try {
-            FileConnection fc = (FileConnection) Connector.open(root + fsSurveyStructure.getDirName());
+            FileConnection fc = (FileConnection) Connector.open(getRoot() + fsSurveyStructure.getDirName());
             Enumeration filelist = fc.list("r_*", true);
             String fileName=null;
             while(filelist.hasMoreElements()) {
@@ -540,4 +544,7 @@ public class FileSystem {
         }
     }
 
+    public String getRoot() {
+        return root + serverDir + '/';
+    }
 }

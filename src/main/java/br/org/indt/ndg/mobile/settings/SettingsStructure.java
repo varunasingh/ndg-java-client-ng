@@ -4,8 +4,6 @@ import br.org.indt.ndg.lwuit.extended.DateField;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.NdgConsts;
 import java.io.PrintStream;
-
-import br.org.indt.ndg.mobile.Utils;
 import br.org.indt.ndg.mobile.settings.PhotoSettings.PhotoResolution;
 import br.org.indt.ndg.mobile.structures.Language;
 import java.io.UnsupportedEncodingException;
@@ -28,7 +26,6 @@ public class SettingsStructure {
     public static final int REGISTERED = 1;
 
     /* Default values */
-    private static final boolean DEFAULT_USE_COMPRESSION = true;
     private static final int DEFAULT_SPLASH_TIME = 8000;
     private static final int DEFAULT_IS_REGISTERED = NOT_REGISTERED;
     private static final boolean DEFAULT_GPS = true;
@@ -244,6 +241,10 @@ public class SettingsStructure {
 
     public String getServerUrl() {
         return server_url;
+    }
+
+    public String getServerLocalDirName() {
+        return server_url.replace( '.', '_' ).replace( ':', '_' ).replace( '/', '_' ).replace('\\','_');
     }
 
     public String getPostResultsUrl() {

@@ -1,6 +1,7 @@
 package br.org.indt.ndg.mobile;
 
 import br.org.indt.ndg.lwuit.ui.GeneralAlert;
+import br.org.indt.ndg.lwuit.ui.Screen;
 import br.org.indt.ndg.lwuit.ui.WaitingScreen;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -12,13 +13,19 @@ public class CheckServerUrl implements Runnable {
     private String serverUrl;
     private Boolean operationCanceled = Boolean.FALSE;
     private Thread thread = null;
+    private Class onSuccess;
 
-    public void checkUrl(String serverUrl)
+    public CheckServerUrl( String url, Class onSuccess ) {
+        this.serverUrl = url;
+        if( !Screen.class.isAssignableFrom( onSuccess ) ) {
+            throw new IllegalArgumentException("The 'onSuccess' argument must extends br.org.indt.ndg.lwuit.ui.Screen class");
+        }
+        this.onSuccess = onSuccess;
+    }
+
+    public void checkUrl( )
     {
-        this.serverUrl = serverUrl;
-
         setOperationAsNotCanceled();
-
         sleepCurrent(500);
         thread = new Thread(this);
         thread.start();
@@ -29,7 +36,7 @@ public class CheckServerUrl implements Runnable {
             serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
         }
         StringBuffer testUrl = new StringBuffer(serverUrl);
-       testUrl.append(AppMIDlet.getInstance().getPropertyServerRoot()).append(NdgConsts.SERVLET_CHECK_URL);
+        testUrl.append(AppMIDlet.getInstance().getPropertyServerRoot()).append(NdgConsts.SERVLET_CHECK_URL);
         HttpConnection hc = null;
         try {
             hc = (HttpConnection) Connector.open(testUrl.toString());
@@ -38,8 +45,12 @@ public class CheckServerUrl implements Runnable {
                 hideWaitingScreen();
                 AppMIDlet.getInstance().getSettings().getStructure().setServerUrl(serverUrl);
                 AppMIDlet.getInstance().getSettings().writeSettings();
-                AppMIDlet.getInstance().showLoginScreen();
 
+                AppMIDlet.getInstance().getFileSystem().setCurrentServer( AppMIDlet.getInstance().getSettings().getStructure().getServerLocalDirName() );
+                Utils.createDirectory( AppMIDlet.getInstance().getFileSystem().getRoot() );
+                AppMIDlet.getInstance().getFileSystem().loadSurveyFiles();
+
+                AppMIDlet.getInstance().setDisplayable( onSuccess );
             } else {
                 hideWaitingScreen();//for waiting screen dispose
                 GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);

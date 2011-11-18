@@ -70,7 +70,7 @@ public class FileStores {
 
         String resultFileName = AppMIDlet.getInstance().getFileSystem().getResultFilename();
         String dirName = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
-        String resultPath = AppMIDlet.getInstance().getRootDir() + dirName + resultFileName;
+        String resultPath = AppMIDlet.getInstance().getFileSystem().getRoot() + dirName + resultFileName;
         FileConnection fc;
         try {
             fc = (FileConnection) Connector.open(resultPath, Connector.READ);

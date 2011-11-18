@@ -22,8 +22,7 @@ public class CheckServerUrlCommand extends CommandControl{
     }
 
     protected void doAction(Object param) {
-        checkingTask = new CheckServerUrl();
-        checkingTask.checkUrl((String) param);
+        checkingTask = (CheckServerUrl)param;
+        checkingTask.checkUrl();
     }
-
 }

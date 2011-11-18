@@ -124,7 +124,7 @@ public class DownloadNewSurveys implements Runnable {
     }
 
     private void showListNewSurveys(){
-        String filename = AppMIDlet.getInstance().getRootDir() + NdgConsts.NEW_SURVEYS_LIST;
+        String filename = AppMIDlet.getInstance().getFileSystem().getRoot() + NdgConsts.NEW_SURVEYS_LIST;
         FileConnection fconn = null;
         DataOutputStream out = null;
         DataInputStream dis = null;
@@ -634,11 +634,11 @@ public class DownloadNewSurveys implements Runnable {
             parser.parseInputStream(bais);
             String surveyID = getCurrentSurveyId();
             String surveyName = getCurrentSurveyTitle();
-            FileConnection fconnDir = (FileConnection) Connector.open(AppMIDlet.getInstance().getRootDir() + m_surveyDirPrefix + surveyID + "/");
+            FileConnection fconnDir = (FileConnection) Connector.open(AppMIDlet.getInstance().getFileSystem().getRoot() + m_surveyDirPrefix + surveyID + "/");
             if (!fconnDir.exists()) {
                 fconnDir.mkdir();
                 fconnDir.close();
-                FileConnection fconnSurvey = (FileConnection) Connector.open(AppMIDlet.getInstance().getRootDir() + m_surveyDirPrefix + surveyID + "/" + NdgConsts.SURVEY_NAME);
+                FileConnection fconnSurvey = (FileConnection) Connector.open(AppMIDlet.getInstance().getFileSystem().getRoot() + m_surveyDirPrefix + surveyID + "/" + NdgConsts.SURVEY_NAME);
                 if (!fconnSurvey.exists()) {
                     fconnSurvey.create();
                 } else {
@@ -650,7 +650,7 @@ public class DownloadNewSurveys implements Runnable {
                 dos.flush();
                 dos.close();
                 fconnSurvey.close();
-                m_surveysDirFiles.put(AppMIDlet.getInstance().getRootDir() + m_surveyDirPrefix + surveyID + "/", AppMIDlet.getInstance().getRootDir() + m_surveyDirPrefix + surveyID + "/" + NdgConsts.SURVEY_NAME);
+                m_surveysDirFiles.put(AppMIDlet.getInstance().getFileSystem().getRoot() + m_surveyDirPrefix + surveyID + "/", AppMIDlet.getInstance().getFileSystem().getRoot() + m_surveyDirPrefix + surveyID + "/" + NdgConsts.SURVEY_NAME);
                 AppMIDlet.getInstance().getFileSystem().addNewSurveyStructure(surveyID, surveyName);
             } else {
                 //The following surveys were not downloaded since they already exist in mobile.

@@ -135,9 +135,9 @@ public class SubmitServer {
         try {
             String surveyRoot = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
             // result without binary data (if there is no binary data in the survey then it is the complete result file)
-            String pathToSurveyWithoutBinary = AppMIDlet.getInstance().getRootDir() + surveyRoot + _filename;
+            String pathToSurveyWithoutBinary = AppMIDlet.getInstance().getFileSystem().getRoot() + surveyRoot + _filename;
             // result with binary data (possibly big very file), is available only if binary data actually exists in the survey
-            String pathToSurveyWithData = AppMIDlet.getInstance().getRootDir() + surveyRoot + "b_" + _filename + "/" + "b_" + _filename;
+            String pathToSurveyWithData = AppMIDlet.getInstance().getFileSystem().getRoot() + surveyRoot + "b_" + _filename + "/" + "b_" + _filename;
             // try to open file with binary data, if it does not exist open result without binary data
             fc = (FileConnection) Connector.open( pathToSurveyWithData );
             if ( fc.exists() ) {

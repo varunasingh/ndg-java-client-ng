@@ -176,7 +176,7 @@ public class PersistenceManager {
         String surveyDir = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
         String filename;
 
-        filename = AppMIDlet.getInstance().getRootDir() + surveyDir + fname;
+        filename = AppMIDlet.getInstance().getFileSystem().getRoot() + surveyDir + fname;
         return filename;
     }
 

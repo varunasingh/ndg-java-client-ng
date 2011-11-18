@@ -229,6 +229,10 @@ public class AppMIDlet extends MIDlet {
                 getSettings().getStructure().setGpsConfigured(false);
             }
         }
+        AppMIDlet.getInstance().getFileSystem().setCurrentServer( AppMIDlet.getInstance().getSettings().getStructure().getServerLocalDirName() );
+        Utils.createDirectory( AppMIDlet.getInstance().getFileSystem().getRoot() );
+        AppMIDlet.getInstance().getFileSystem().loadSurveyFiles();
+
         setSurveyList(new SurveyList());
 
         //check for errors first before loading spash screen

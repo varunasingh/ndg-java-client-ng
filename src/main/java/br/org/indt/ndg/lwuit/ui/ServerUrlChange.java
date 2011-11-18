@@ -1,5 +1,6 @@
 package br.org.indt.ndg.lwuit.ui;
 
+import br.org.indt.ndg.lwuit.control.BackToSettingsFormCommand;
 import br.org.indt.ndg.lwuit.control.CheckServerUrlCommand;
 import br.org.indt.ndg.lwuit.control.ExitCommand;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
@@ -12,22 +13,22 @@ import com.sun.lwuit.events.ActionListener;
 import com.sun.lwuit.layouts.BoxLayout;
 
 
-public class ServerUrlSelector extends Screen implements ActionListener {
+public class ServerUrlChange extends Screen implements ActionListener {
 
     private ClearTextField serverUrlTextArea;
     private final String defaultInput = "http://";
 
-    public ServerUrlSelector(){
+    public ServerUrlChange(){
     }
 
     public void actionPerformed(ActionEvent evt) {
         Object src = evt.getSource();
-        if (src == ExitCommand.getInstance().getCommand()) {
-            ExitCommand.getInstance().execute(null);
+        if (src == BackToSettingsFormCommand.getInstance().getCommand()) {
+            BackToSettingsFormCommand.getInstance().execute(null);
         } else if ( src == CheckServerUrlCommand.getInstance().getCommand() ) {
             String newAddress = serverUrlTextArea.getText().trim();
             WaitingScreen.show( Resources.CONNECTING );
-            CheckServerUrlCommand.getInstance().execute( new CheckServerUrl( newAddress, LoginForm.class ) );
+            CheckServerUrlCommand.getInstance().execute( new CheckServerUrl( newAddress, SettingsForm.class ) );
         }
     }
 
@@ -41,7 +42,10 @@ public class ServerUrlSelector extends Screen implements ActionListener {
         serverUrlTextArea = new ClearTextField();
         String input = AppMIDlet.getInstance().getPropertyServerUrl() != null ?
                        AppMIDlet.getInstance().getPropertyServerUrl() : defaultInput;
-        serverUrlTextArea.setText(input);
+
+        String input2 = AppMIDlet.getInstance().getSettings().getStructure().getServerUrl();
+
+        serverUrlTextArea.setText( input2 == null ? input : input2 );
         serverUrlTextArea.addActionListener(this);
         serverUrlTextArea.setInputMode("Abc");
         form.addComponent(serverUrlTextArea);
@@ -57,14 +61,15 @@ public class ServerUrlSelector extends Screen implements ActionListener {
     }
 
     protected void loadData() {
-
+        form.removeAllCommands();
+        form.removeAll();
     }
 
     protected void customize() {
         setTitle( Resources.NEWUI_NOKIA_DATA_GATHERING, Resources.SERVER_WIZARD );
         form.setLayout( new BoxLayout( BoxLayout.Y_AXIS) );
 
-        form.addCommand(ExitCommand.getInstance().getCommand());
+        form.addCommand(BackToSettingsFormCommand.getInstance().getCommand());
         form.addCommand(CheckServerUrlCommand.getInstance().getCommand());
 
         initForm();

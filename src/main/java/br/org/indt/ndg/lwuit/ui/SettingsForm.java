@@ -1,6 +1,7 @@
 package br.org.indt.ndg.lwuit.ui;
 
 import br.org.indt.ndg.lwuit.control.BackToSurveyListCommand;
+import br.org.indt.ndg.lwuit.control.ChangeServerUrlCommand;
 import br.org.indt.ndg.lwuit.control.CommandControl;
 import br.org.indt.ndg.lwuit.control.GPSCommand;
 import br.org.indt.ndg.lwuit.control.OpenLangScreenCommand;
@@ -35,6 +36,7 @@ public class SettingsForm extends Screen implements ActionListener{
         commandList.addElement( GPSCommand.getInstance() );
         commandList.addElement( ResolutionSelectionViewCommand.getInstance() );
         commandList.addElement( SelectStyleViewCommand.getInstance() );
+        commandList.addElement( ChangeServerUrlCommand.getInstance() );
         commandList.addElement( SelectDateFormatCommand.getInstance() );
         commandList.addElement( OpenLangScreenCommand.getInstance() );
 

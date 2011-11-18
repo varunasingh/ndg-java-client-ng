@@ -74,7 +74,7 @@ public class OpenRosaSurvey implements UserInterface{
         addResultData();
 
         String dirName = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
-        String file = AppMIDlet.getInstance().getRootDir() + dirName + NdgConsts.SURVEY_NAME;
+        String file = AppMIDlet.getInstance().getFileSystem().getRoot() + dirName + NdgConsts.SURVEY_NAME;
         load( file ) ;
     }
 
