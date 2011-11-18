@@ -42,4 +42,5 @@ public class NdgConsts {
     public static final String CHECK_URL_RESPONSE = "NdgServer";
     public static final String SERVLET_LANGUAGE_TEXT = "text";
     public static final String SERVLET_LANGUAGE_FONT = "font";
+    public static final String SERVLET_CHECK_AUTHORIZATION = "checkAuthorization";
 };

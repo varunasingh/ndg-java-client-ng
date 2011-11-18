@@ -1,5 +1,6 @@
 package br.org.indt.ndg.mobile;
 
+import br.org.indt.ndg.lwuit.control.CommandControl;
 import br.org.indt.ndg.lwuit.ui.LoginForm;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
 import br.org.indt.ndg.lwuit.ui.NDGLookAndFeel;
@@ -55,6 +56,8 @@ public class AppMIDlet extends MIDlet {
 
     private String rootDir = null;
 
+    private CommandControl unAuthorizedCommand = null;
+
     public AppMIDlet() throws Exception {
         instance = this;
     }
@@ -105,9 +108,8 @@ public class AppMIDlet extends MIDlet {
             showWelcomeScreen();
         } else
         {
-            showLoginScreen();
+            showEncryptionScreen();
         }
-        SecureHttpConnector.setCredentials("admin", "ndg"); //TODO move this
     }
 
     public void initLWUIT() {
@@ -200,8 +202,13 @@ public class AppMIDlet extends MIDlet {
     }
 
 
-    public void showLoginScreen(){
+    public void showLoginScreen(CommandControl unauthorizedCommand){
+        this.unAuthorizedCommand = unauthorizedCommand;
         setDisplayable( LoginForm.class );
+    }
+
+    public void executeUnauthorizedCommand(){
+        unAuthorizedCommand.execute(null);
     }
 
     private void showWelcomeScreen() {

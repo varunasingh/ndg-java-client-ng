@@ -2,7 +2,7 @@ package br.org.indt.ndg.lwuit.ui;
 
 import br.org.indt.ndg.lwuit.control.DeleteResultNowCommand;
 import br.org.indt.ndg.lwuit.control.OpenResultCommand;
-import br.org.indt.ndg.lwuit.control.SendResultNowCommand;
+import br.org.indt.ndg.lwuit.control.SendResultCommand;
 import br.org.indt.ndg.lwuit.control.ViewResultCommand;
 import br.org.indt.ndg.mobile.Resources;
 import com.sun.lwuit.Command;
@@ -19,7 +19,7 @@ public class ResultListContextMenu extends ContextMenu{
     }
 
     protected void buildOptions(){
-        Command[] options  = new Command[] {SendResultNowCommand.getInstance().getCommand(),
+        Command[] options  = new Command[] {SendResultCommand.getInstance().getCommand(),
                                             OpenResultCommand.getInstance().getCommand(),
                                             ViewResultCommand.getInstance().getCommand(),
                                             DeleteResultNowCommand.getInstance().getCommand()};
@@ -36,10 +36,10 @@ public class ResultListContextMenu extends ContextMenu{
             OpenResultCommand.getInstance().execute(new Integer(indexList));
         } else if (cmd == ViewResultCommand.getInstance().getCommand()) {
             ViewResultCommand.getInstance().execute(new Integer(indexList));
-        } else if (cmd == SendResultNowCommand.getInstance().getCommand()) {
+        } else if (cmd == SendResultCommand.getInstance().getCommand()) {
             boolean[] listFlags = new boolean[sizeList];
             listFlags[indexList] = true;
-            SendResultNowCommand.getInstance().execute(listFlags);
+            SendResultCommand.getInstance().execute(listFlags);
         } else if (cmd == DeleteResultNowCommand.getInstance().getCommand()) {
             boolean[] listFlags = new boolean[sizeList];
             listFlags[indexList] = true;

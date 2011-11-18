@@ -2,6 +2,7 @@ package br.org.indt.ndg.lwuit.ui;
 
 import br.org.indt.ndg.lwuit.control.CheckServerUrlCommand;
 import br.org.indt.ndg.lwuit.control.ExitCommand;
+import br.org.indt.ndg.lwuit.control.OnSuccessServerDefinition;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.CheckServerUrl;
@@ -27,7 +28,7 @@ public class ServerUrlSelector extends Screen implements ActionListener {
         } else if ( src == CheckServerUrlCommand.getInstance().getCommand() ) {
             String newAddress = serverUrlTextArea.getText().trim();
             WaitingScreen.show( Resources.CONNECTING );
-            CheckServerUrlCommand.getInstance().execute( new CheckServerUrl( newAddress, LoginForm.class ) );
+            CheckServerUrlCommand.getInstance().execute( new CheckServerUrl( newAddress, new OnSuccessServerDefinition() ) );
         }
     }
 

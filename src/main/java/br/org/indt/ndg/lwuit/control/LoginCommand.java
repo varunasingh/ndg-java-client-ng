@@ -1,6 +1,7 @@
 package br.org.indt.ndg.lwuit.control;
 
 import br.org.indt.ndg.mobile.AppMIDlet;
+import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.httptransport.SecureHttpConnector;
 import com.sun.lwuit.Command;
 
@@ -20,13 +21,16 @@ public class LoginCommand extends CommandControl{
     }
 
     protected Command createCommand() {
-        return new Command("Login");//TODO localize
+        return new Command(Resources.LOGIN);
     }
 
     protected void doAction(Object parameter) {
         String[] paramsStr = (String[])parameter;
-        SecureHttpConnector.setCredentials(paramsStr[0], paramsStr[1]);
-        AppMIDlet.getInstance().showEncryptionScreen();
+        if(!paramsStr[0].equals("") && !paramsStr[1].equals(""))
+        {
+            SecureHttpConnector.setCredentials(paramsStr[0], paramsStr[1]);
+        }
+        AppMIDlet.getInstance().executeUnauthorizedCommand();
     }
 }
 

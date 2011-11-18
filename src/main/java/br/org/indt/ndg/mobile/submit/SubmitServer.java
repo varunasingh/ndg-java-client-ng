@@ -2,6 +2,7 @@ package br.org.indt.ndg.mobile.submit;
 
 import br.org.indt.ndg.lwuit.control.AES;
 import br.org.indt.ndg.lwuit.control.ExitCommand;
+import br.org.indt.ndg.lwuit.control.SendResultCommand;
 import br.org.indt.ndg.lwuit.ui.GeneralAlert;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -11,12 +12,8 @@ import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 import br.org.indt.ndg.mobile.AppMIDlet;
-import br.org.indt.ndg.mobile.NdgConsts;
 import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.ResultList;
-import br.org.indt.ndg.mobile.SurveyList;
-import br.org.indt.ndg.mobile.Utils;
-import br.org.indt.ndg.mobile.httptransport.AuthorizationException;
 import br.org.indt.ndg.mobile.httptransport.SecureHttpConnector;
 import br.org.indt.ndg.mobile.logging.Logger;
 import java.util.Hashtable;
@@ -47,12 +44,6 @@ public class SubmitServer {
         }
     }
 
-    public void submitResult(String resultFilename, String surveyId){
-        Vector resultsToSend = new Vector();
-        resultsToSend.addElement(resultFilename);
-        send(resultsToSend, surveyId);
-    }
-
     public void submit( Vector resultFilenames, String surveyId ) {
         send(resultFilenames, surveyId);
     }
@@ -77,6 +68,14 @@ public class SubmitServer {
             }
 
             try {
+                if(!SecureHttpConnector.isAuthorizedForPost())
+                {
+                    GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+                    GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " Try login again", GeneralAlert.ERROR);//TODO localize
+                    AppMIDlet.getInstance().showLoginScreen(SendResultCommand.getInstance());
+                    return;
+                }
+
                 Hashtable params = new Hashtable();
                 params.put("surveyId", surveyId);
                 HttpMultipartPostRequest request =  new HttpMultipartPostRequest( m_servletUrl, params,
@@ -90,7 +89,7 @@ public class SubmitServer {
                     GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
                     GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " Try login again", GeneralAlert.ERROR);//TODO localize
                     SecureHttpConnector.setAuthenticationFail();
-                    AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.LoginForm.class);
+                    AppMIDlet.getInstance().showLoginScreen(SendResultCommand.getInstance());
                     return;
                 }else {
                     m_filesNotSent.addElement(filename);
@@ -105,12 +104,6 @@ public class SubmitServer {
                     GeneralAlert.getInstance().showCodedAlert( Resources.NETWORK_FAILURE, ioe.getMessage() != null ? ioe.getMessage().trim() : "", GeneralAlert.ALARM );
                     break;
                 }
-            }catch(AuthorizationException ex){
-                GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-                GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " Try login again", GeneralAlert.ERROR);//TODO localize
-                SecureHttpConnector.setAuthenticationFail();
-                AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.LoginForm.class);
-                return;
             }
         }
         if ( !m_filesNotSent.isEmpty() ) {

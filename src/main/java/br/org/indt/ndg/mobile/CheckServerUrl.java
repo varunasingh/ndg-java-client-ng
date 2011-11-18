@@ -1,5 +1,6 @@
 package br.org.indt.ndg.mobile;
 
+import br.org.indt.ndg.lwuit.control.Event;
 import br.org.indt.ndg.lwuit.ui.GeneralAlert;
 import br.org.indt.ndg.lwuit.ui.Screen;
 import br.org.indt.ndg.lwuit.ui.WaitingScreen;
@@ -13,13 +14,10 @@ public class CheckServerUrl implements Runnable {
     private String serverUrl;
     private Boolean operationCanceled = Boolean.FALSE;
     private Thread thread = null;
-    private Class onSuccess;
+    private Event onSuccess;
 
-    public CheckServerUrl( String url, Class onSuccess ) {
+    public CheckServerUrl( String url, Event onSuccess ) {
         this.serverUrl = url;
-        if( !Screen.class.isAssignableFrom( onSuccess ) ) {
-            throw new IllegalArgumentException("The 'onSuccess' argument must extends br.org.indt.ndg.lwuit.ui.Screen class");
-        }
         this.onSuccess = onSuccess;
     }
 
@@ -50,7 +48,7 @@ public class CheckServerUrl implements Runnable {
                 Utils.createDirectory( AppMIDlet.getInstance().getFileSystem().getRoot() );
                 AppMIDlet.getInstance().getFileSystem().loadSurveyFiles();
 
-                AppMIDlet.getInstance().setDisplayable( onSuccess );
+                onSuccess.execute( null );
             } else {
                 hideWaitingScreen();//for waiting screen dispose
                 GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);

@@ -15,27 +15,29 @@ public class DigestAuthResponse {
     public static final String QOP_UNSPECIFIED = "unspecified";
     public static final String QOP_AUTH = "auth";
     public static final String QOP_AUTH_INT = "auth-int";
+    private boolean hasCredentials = false;
     private String HA1;
-    private Hashtable authParameters;
+    private Hashtable authParameters = new Hashtable();
 
     private Hashtable connectionParameters;
 
     public DigestAuthResponse( String authArgs, String user, String password) {
         //Parse out the parameters of the challenge
         connectionParameters = AuthUtils.getQuotedParameters( authArgs );
-        //Generate HA1
-        String HA1 = AuthUtils.MD5(user + ":" + connectionParameters.get("realm") + ":" + password);
 
+        if(password != null && user != null)
+        {
         //Create a response which will be used to create the header (and can be cached).
-        this.authParameters = new Hashtable();
-        this.HA1 = HA1;
-
-        initParameters(user);
+         initParameters(user, password);
+        }
     }
 
+    public boolean hasCredentials() {
+        return hasCredentials;
+    }
 
-    private void initParameters(String user){
-
+    public final void initParameters(String user, String password){
+        HA1 = AuthUtils.MD5(user + ":" + connectionParameters.get("realm") + ":" + password);
         String qop;
         if (!connectionParameters.containsKey("qop")) {
             qop = DigestAuthResponse.QOP_UNSPECIFIED;
@@ -72,6 +74,7 @@ public class DigestAuthResponse {
         if (opaque != null) {
             put("opaque", AuthUtils.quote(opaque));
         }
+        hasCredentials = true;
     }
 
     public String getDigestHeader(HttpConnection connection) throws UnsupportedEncodingException {

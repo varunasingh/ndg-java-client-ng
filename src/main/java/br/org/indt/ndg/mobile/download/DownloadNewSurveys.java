@@ -1,5 +1,7 @@
 package br.org.indt.ndg.mobile.download;
 
+import br.org.indt.ndg.lwuit.control.CheckNewSurveysCommand;
+import br.org.indt.ndg.lwuit.control.DownloadCheckSurveyListCommand;
 import br.org.indt.ndg.lwuit.control.SurveysControl;
 import br.org.indt.ndg.lwuit.model.XFormSurvey;
 import br.org.indt.ndg.lwuit.ui.CheckNewSurveyList;
@@ -8,7 +10,6 @@ import br.org.indt.ndg.lwuit.ui.StatusScreenDownload;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.NdgConsts;
 import br.org.indt.ndg.mobile.Resources;
-import br.org.indt.ndg.mobile.httptransport.AuthorizationException;
 
 import br.org.indt.ndg.mobile.httptransport.SecureHttpConnector;
 import br.org.indt.ndg.mobile.logging.Logger;
@@ -163,16 +164,10 @@ public class DownloadNewSurveys implements Runnable {
             mErrorsHandler.handleSurveyDownloadConnectionError(ex.getMessage().trim());
         } catch (IOException ex) {
             Logger.getInstance().log(ex.getClass().getName() + "::" + ex.getMessage());
-            mErrorsHandler.handleSurveyInputOutpuError(ex.getMessage());
+            mErrorsHandler.handleSurveyInputOutputError(ex.getMessage());
         } catch (SecurityException ex) {
             Logger.getInstance().log(ex.getClass().getName() + "::" + ex.getMessage());
             mErrorsHandler.handleSurveyDownloadSecurityError();
-        } catch (AuthorizationException e) {
-            cancelOperation(); //TODO error handler
-            GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-            GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " Try login again", GeneralAlert.ERROR);//TODO localize
-            SecureHttpConnector.setAuthenticationFail();
-            AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.LoginForm.class);
         }catch(Exception ex){
             Logger.getInstance().logException("Exception while downloading surveys");
             AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.SurveyList.class);
@@ -274,12 +269,12 @@ public class DownloadNewSurveys implements Runnable {
             responseCode = httpConnection.getResponseCode();
             if (responseCode != HttpConnection.HTTP_OK) {
                 cancelOperation();
-                GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-                GeneralAlert.getInstance().showCodedAlert(Resources.CHECK_NEW_SURVEYS, String.valueOf(responseCode), GeneralAlert.ERROR);
 
                 if(responseCode == HttpConnection.HTTP_UNAUTHORIZED){
+                    GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+                    GeneralAlert.getInstance().showCodedAlert(Resources.CHECK_NEW_SURVEYS, String.valueOf(responseCode), GeneralAlert.INFO);
                     SecureHttpConnector.setAuthenticationFail();
-                    AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.LoginForm.class);
+                    AppMIDlet.getInstance().showLoginScreen(CheckNewSurveysCommand.getInstance());
                 }else{
                     AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.SurveyList.class);
                 }
@@ -330,7 +325,7 @@ public class DownloadNewSurveys implements Runnable {
         }
     }
 
-    private HttpConnection tryConnect(String urlParam, String[] acceptableTypes) throws AuthorizationException, IOException{
+    private HttpConnection tryConnect(String urlParam, String[] acceptableTypes) throws IOException{
         StringBuffer acceptField = new StringBuffer(256);
 
         // there must be one or more acceptable media types
@@ -524,7 +519,7 @@ public class DownloadNewSurveys implements Runnable {
 
                     if(responseCode == HttpConnection.HTTP_UNAUTHORIZED){
                         SecureHttpConnector.setAuthenticationFail();
-                        AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.LoginForm.class);
+                        AppMIDlet.getInstance().showLoginScreen(DownloadCheckSurveyListCommand.getInstance());
                     }else{
                         AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.SurveyList.class);
                     }
@@ -565,12 +560,6 @@ public class DownloadNewSurveys implements Runnable {
                 GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
                 GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED, GeneralAlert.ERROR);
                 AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.SurveyList.class);
-            }catch (AuthorizationException e) {
-                cancelOperation();
-                GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-                GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + ". Try login again", GeneralAlert.ERROR);//TODO localize
-                SecureHttpConnector.setAuthenticationFail();
-                AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.LoginForm.class);
             }finally {
                 try {
                     if(httpInputStream != null){
@@ -728,7 +717,7 @@ public class DownloadNewSurveys implements Runnable {
             AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.SurveyList.class);
         }
 
-        private void handleSurveyInputOutpuError(String message) {
+        private void handleSurveyInputOutputError(String message) {
             GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
             GeneralAlert.getInstance().show(Resources.CHECK_NEW_SURVEYS, Resources.ERROR_TITLE + message, GeneralAlert.ERROR);
         }

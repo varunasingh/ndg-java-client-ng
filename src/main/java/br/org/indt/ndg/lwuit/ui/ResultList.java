@@ -9,7 +9,7 @@ import br.org.indt.ndg.lwuit.control.ExitCommand;
 import br.org.indt.ndg.lwuit.control.MarkAllResultsCommand;
 import br.org.indt.ndg.lwuit.control.NewResultCommand;
 import br.org.indt.ndg.lwuit.control.OpenResultCommand;
-import br.org.indt.ndg.lwuit.control.SendResultNowCommand;
+import br.org.indt.ndg.lwuit.control.SendResultCommand;
 import br.org.indt.ndg.lwuit.control.SurveysControl;
 import br.org.indt.ndg.lwuit.control.UnmarkAllResultsCommand;
 import br.org.indt.ndg.lwuit.control.ViewResultCommand;
@@ -119,11 +119,11 @@ public class ResultList extends Screen implements ActionListener {
         } else if (cmd == ViewResultCommand.getInstance().getCommand()) {
                 BackResultViewCommand.getInstance().setReturnScreen(this);
                 ViewResultCommand.getInstance().execute(new Integer(getSelectedResult()));
-        } else if (cmd == SendResultNowCommand.getInstance().getCommand()) {
+        } else if (cmd == SendResultCommand.getInstance().getCommand()) {
                 if(underlyingModel.getCheckedCount()==0){
                     underlyingModel.setChecked(list.getSelectedIndex());
                 }
-                SendResultNowCommand.getInstance().execute(underlyingModel.getSelectedFlags());
+                SendResultCommand.getInstance().execute(underlyingModel.getSelectedFlags());
         } else if (cmd == DeleteResultNowCommand.getInstance().getCommand()) {
                 if(underlyingModel.getCheckedCount()==0){
                     underlyingModel.setChecked(list.getSelectedIndex());
@@ -180,7 +180,7 @@ public class ResultList extends Screen implements ActionListener {
                 form.removeCommand(UnmarkAllResultsCommand.getInstance().getCommand());
                 form.removeCommand(MarkAllResultsCommand.getInstance().getCommand());
                 form.removeCommand(DeleteResultNowCommand.getInstance().getCommand());
-                form.removeCommand(SendResultNowCommand.getInstance().getCommand());
+                form.removeCommand(SendResultCommand.getInstance().getCommand());
                 form.removeCommand(ViewResultCommand.getInstance().getCommand());
                 form.removeCommand(OpenResultCommand.getInstance().getCommand());
             }
@@ -189,7 +189,7 @@ public class ResultList extends Screen implements ActionListener {
                 form.addCommand(UnmarkAllResultsCommand.getInstance().getCommand());
                 form.addCommand(MarkAllResultsCommand.getInstance().getCommand());
                 form.addCommand(DeleteResultNowCommand.getInstance().getCommand());
-                form.addCommand(SendResultNowCommand.getInstance().getCommand());
+                form.addCommand(SendResultCommand.getInstance().getCommand());
                 form.addCommand(ViewResultCommand.getInstance().getCommand());
                 form.addCommand(OpenResultCommand.getInstance().getCommand());
             }

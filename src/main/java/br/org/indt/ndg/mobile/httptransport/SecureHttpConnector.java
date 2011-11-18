@@ -35,9 +35,7 @@ public class SecureHttpConnector implements HttpConnection {
     private static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
 
-    public static HttpConnection open(String url, String httpMethod) throws IOException, AuthorizationException {
-        authenticate();
-
+    public static HttpConnection open(String url, String httpMethod) throws IOException {
         HttpConnection conn = null;
         conn = new SecureHttpConnector( url );
         conn.setRequestMethod(httpMethod);
@@ -53,19 +51,13 @@ public class SecureHttpConnector implements HttpConnection {
         m_connection = ( HttpConnection )Connector.open( m_url );
     }
 
-
-    public static void authenticate() throws IOException, AuthorizationException{
-        if(!logged){
-            logged = tryLogin();
-            if(!logged){
-                throw new AuthorizationException();
-            }
-        }
-    }
-
     public static void setCredentials(String aUser, String aPassword) {
         user = aUser;
         password = aPassword;
+        if(digestResponse != null)
+        {
+            digestResponse.initParameters(user, password);
+        }
     }
 
     public static String getCurrentUser(){
@@ -80,60 +72,9 @@ public class SecureHttpConnector implements HttpConnection {
         logged = false;
     }
 
-    private HttpConnection connection() {
-        return m_connection;
-    }
-
-    public static boolean tryLogin() throws IOException{
-
-        if(user == null || password == null){
-            return false;
-        }
-
-        HttpConnection testConnection = null;
-        boolean authorized = false;
-        try {
-            String url = AppMIDlet.getInstance().getSettings().getStructure().getReceiveSurveyURL();
-
-            testConnection = (HttpConnection)Connector.open( url );
-            if (testConnection.getResponseCode() == HttpConnection.HTTP_UNAUTHORIZED) {
-                String header = testConnection.getHeaderField(WWW_AUTHENTICATE);
-                String authHeaderVal = "";
-                if (header.toLowerCase().startsWith(BASIC)) {
-                    authHeaderVal = "Basic " + BasicAuth.encode(user, password);
-                } else if (header.toLowerCase().startsWith(DIGEST)) {
-                    String args = header.substring(header.indexOf(' ') + 1);
-                    digestResponse = new DigestAuthResponse(args, user, password); //TODO save user and passowrd
-                    authHeaderVal =  digestResponse.getDigestHeader(testConnection);
-                    testConnection.close();
-                    testConnection = (HttpConnection)Connector.open( url );
-                }
-
-                testConnection.setRequestProperty(AUTHORIZATION, authHeaderVal);
-                if(testConnection.getResponseCode() == HttpConnection.HTTP_UNAUTHORIZED){
-                    authorized = false;
-                }else{
-                    authorized = true;
-                }
-            }else{
-                authorized = true;
-            }
-        } catch (IOException ex) {
-            authorized = false;
-            throw ex;
-        }finally{
-            try{
-                if(testConnection != null){
-                    testConnection.close();
-                }
-            }catch(IOException ex){}
-        }
-        return authorized;
-    }
-
     private  HttpConnection duplicateConnection() throws IOException {
         HttpConnection connection = ( HttpConnection )Connector.open( m_url);
-        connection.setRequestMethod(connection().getRequestMethod());
+        connection.setRequestMethod(m_connection.getRequestMethod());
 
         Enumeration keys = m_properties.keys();
         while (keys.hasMoreElements()) {
@@ -146,133 +87,161 @@ public class SecureHttpConnector implements HttpConnection {
 
     public void setRequestProperty(String key, String value) throws IOException {
         m_properties.put(key, value);
-        connection().setRequestProperty(key, value);
+        m_connection.setRequestProperty(key, value);
     }
 
     public void setRequestMethod(String method) throws IOException {
-        connection().setRequestMethod(method);
+        m_connection.setRequestMethod(method);
     }
 
     // <editor-fold desc="The following methods cause the transition to the Connected state when the connection is in Setup state.">
 
     public int getHeaderFieldInt(String name, int def) throws IOException {
-        return connection().getHeaderFieldInt(name, def);
+        return m_connection.getHeaderFieldInt(name, def);
     }
 
-    public int getResponseCode() throws IOException {
-        if(connection().getResponseCode() == HttpConnection.HTTP_UNAUTHORIZED && connection().getRequestMethod().equals(GET)){
-            if(logged = tryLogin()){
-                try{
-                    m_connection.close();
-                }catch(IOException ex){}
+    //                    authHeaderVal = "Basic " + BasicAuth.encode(user, password);
 
+    public int getResponseCode() throws IOException {
+        if(m_connection.getResponseCode() == HttpConnection.HTTP_UNAUTHORIZED ){
+                String header = m_connection.getHeaderField(WWW_AUTHENTICATE);
+                if (header.toLowerCase().startsWith(BASIC)) {
+
+                } else if (header.toLowerCase().startsWith(DIGEST)) {
+                    String args = header.substring(header.indexOf(' ') + 1);
+                    digestResponse = new DigestAuthResponse(args, user, password); //TODO save user and passowrd
+                }
+                if(digestResponse.hasCredentials() && !m_connection.getRequestMethod().equals("POST"))
+                {
                 m_connection = duplicateConnection();
-                return connection().getResponseCode();
-            }
+                loginIfOk();
+                return m_connection.getResponseCode();
+                }
+        } else {
+            loginIfOk();
         }
-        return connection().getResponseCode();
+        return m_connection.getResponseCode();
+    }
+
+    private void loginIfOk() throws IOException {
+        if(m_connection.getResponseCode() == HttpConnection.HTTP_OK)
+        {
+            logged = true;
+        }
     }
 
     public String getHeaderField(int n) throws IOException {
-        return connection().getHeaderField(n);
+        return m_connection.getHeaderField(n);
     }
 
     public String getHeaderField(String name) throws IOException {
-        return connection().getHeaderField(name);
+        return m_connection.getHeaderField(name);
     }
 
     public String getHeaderFieldKey(int n) throws IOException {
-        return connection().getHeaderFieldKey(n);
+        return m_connection.getHeaderFieldKey(n);
     }
 
     public String getResponseMessage() throws IOException {
-        return connection().getResponseMessage();
+        return m_connection.getResponseMessage();
     }
 
     public long getDate() throws IOException {
-        return connection().getDate();
+        return m_connection.getDate();
     }
 
     public long getExpiration() throws IOException {
-        return connection().getExpiration();
+        return m_connection.getExpiration();
     }
 
     public long getHeaderFieldDate(String name, long def) throws IOException {
-        return connection().getHeaderFieldDate(name, def);
+        return m_connection.getHeaderFieldDate(name, def);
     }
 
     public long getLastModified() throws IOException {
-        return connection().getLastModified();
+        return m_connection.getLastModified();
     }
 
     public String getEncoding() {
-        return connection().getEncoding();
+        return m_connection.getEncoding();
     }
 
     public String getType() {
-        return connection().getType();
+        return m_connection.getType();
     }
 
     public long getLength() {
-        return connection().getLength();
+        return m_connection.getLength();
     }
 
     public DataInputStream openDataInputStream() throws IOException {
-        return connection().openDataInputStream();
+        return m_connection.openDataInputStream();
     }
 
     public InputStream openInputStream() throws IOException {
-        return connection().openInputStream();
+        return m_connection.openInputStream();
     }
 
 
     public DataOutputStream openDataOutputStream() throws IOException {
-        return connection().openDataOutputStream();
+        return m_connection.openDataOutputStream();
     }
 
     public OutputStream openOutputStream() throws IOException {
-        return connection().openOutputStream();
+        return m_connection.openOutputStream();
     }
     // </editor-fold>
 
     // <editor-fold desc="Methods can be called during setup or connected state.">
     public void close() throws IOException {
-        connection().close();
+        m_connection.close();
     }
 
     public String getRequestMethod() {
-        return connection().getRequestMethod();
+        return m_connection.getRequestMethod();
     }
 
     public String getRequestProperty(String key) {
-        return connection().getRequestProperty(key);
+        return m_connection.getRequestProperty(key);
     }
 
     public String getURL() {
-        return connection().getURL();
+        return m_connection.getURL();
     }
 
     public String getProtocol() {
-        return connection().getProtocol();
+        return m_connection.getProtocol();
     }
 
     public String getHost() {
-        return connection().getHost();
+        return m_connection.getHost();
     }
 
     public String getFile() {
-        return connection().getFile();
+        return m_connection.getFile();
     }
     public String getRef() {
-        return connection().getRef();
+        return m_connection.getRef();
     }
 
     public int getPort() {
-        return connection().getPort();
+        return m_connection.getPort();
     }
 
     public String getQuery() {
-        return connection().getQuery();
+        return m_connection.getQuery();
+    }
+
+    public static boolean isAuthorizedForPost() throws IOException
+    {
+        if(!logged)
+        {
+            HttpConnection connector =
+                  (HttpConnection) SecureHttpConnector.open(AppMIDlet.getInstance().getSettings().getStructure().getTestAuthorizationUrl(), "GET");
+            return connector.getResponseCode() == HttpConnection.HTTP_OK;
+        } else {
+            return true;
+        }
     }
 
     // </editor-fold>

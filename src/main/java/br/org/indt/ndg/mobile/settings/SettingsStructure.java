@@ -251,6 +251,10 @@ public class SettingsStructure {
         return new StringBuffer(server_url).append(server_root).append(NdgConsts.SERVLET_POST_RESULTS).toString();
     }
 
+    public String getTestAuthorizationUrl() {
+        return new StringBuffer(server_url).append(server_root).append(NdgConsts.SERVLET_CHECK_AUTHORIZATION).toString();
+    }
+
     public String getServerRoot() {
         return server_root;
     }

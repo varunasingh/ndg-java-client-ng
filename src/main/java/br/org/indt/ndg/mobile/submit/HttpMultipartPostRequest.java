@@ -1,6 +1,5 @@
 package br.org.indt.ndg.mobile.submit;
 
-import br.org.indt.ndg.mobile.httptransport.AuthorizationException;
 import br.org.indt.ndg.mobile.httptransport.SecureHttpConnector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
 /**
@@ -72,7 +70,7 @@ public class HttpMultipartPostRequest {
         stopRequest = true;
     }
 
-    public int send() throws IOException, AuthorizationException {
+    public int send() throws IOException {
         HttpConnection hc = null;
         InputStream is = null;
         ByteArrayOutputStream bos = null;
