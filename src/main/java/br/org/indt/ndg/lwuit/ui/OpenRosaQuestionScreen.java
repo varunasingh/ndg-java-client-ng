@@ -722,10 +722,10 @@ class XfoilExclusiveChoiceFieldUI extends ContainerUI {
         }
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled( boolean enabled ) {
         super.setEnabled( enabled );
         for ( int i = 0; i < groupButton.getButtonCount(); i++ ){
-            groupButton.getRadioButton( i ).setEnabled( false );
+            groupButton.getRadioButton( i ).setEnabled( enabled );
         }
     }
 
