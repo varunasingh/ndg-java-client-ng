@@ -33,6 +33,7 @@ public class SecureHttpConnector implements HttpConnection {
     private static final String BASIC = "basic";
     private static final String AUTHORIZATION = "Authorization";
     private static final String WWW_AUTHENTICATE = "WWW-Authenticate";
+    private static final String WWW_AUTHENTICATE_BACKUP = "X-WWW-Authenticate";
 
 
     public static HttpConnection open(String url, String httpMethod) throws IOException {
@@ -108,6 +109,10 @@ public class SecureHttpConnector implements HttpConnection {
                 if (header.toLowerCase().startsWith(BASIC)) {
 
                 } else if (header.toLowerCase().startsWith(DIGEST)) {
+                    if( header.length() < 15) {
+                        //for n8 problems
+                        header += " " + m_connection.getHeaderField(WWW_AUTHENTICATE_BACKUP);
+                    }
                     String args = header.substring(header.indexOf(' ') + 1);
                     digestResponse = new DigestAuthResponse(args, user, password); //TODO save user and passowrd
                 }
