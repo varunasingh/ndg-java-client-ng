@@ -16,7 +16,6 @@ import br.org.indt.ndg.mobile.logging.Logger;
 import br.org.indt.ndg.lwuit.ui.SplashScreen;
 import br.org.indt.ndg.lwuit.ui.camera.ICameraManager;
 import br.org.indt.ndg.lwuit.ui.style.StyleConst;
-import br.org.indt.ndg.mobile.httptransport.SecureHttpConnector;
 import br.org.indt.ndg.mobile.submit.SubmitServer;
 import com.sun.lwuit.Display;
 import com.sun.lwuit.TextField;
@@ -292,10 +291,6 @@ public class AppMIDlet extends MIDlet {
 
     public String getPropertyServerUrl() {
         return getAppProperty("server-url");
-    }
-
-    public String getAppMsisdn() {
-        return getAppProperty("app-msisdn");
     }
 
     public void setTimeTracker(long _time) {
