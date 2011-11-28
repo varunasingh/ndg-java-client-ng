@@ -298,11 +298,6 @@ public class AppMIDlet extends MIDlet {
         return getAppProperty("app-msisdn");
     }
 
-    public String getPropertyServerRoot() {
-        String serverRoot = getAppProperty("server-root");
-        return serverRoot != null ? serverRoot : NdgConsts.SERVER_ROOT;
-    }
-
     public void setTimeTracker(long _time) {
         timeTracker = _time;
     }

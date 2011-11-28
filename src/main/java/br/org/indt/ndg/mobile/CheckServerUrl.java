@@ -30,11 +30,11 @@ public class CheckServerUrl implements Runnable {
     }
 
     public void run() {
-        if (serverUrl.endsWith("/")) {
-            serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+        if (!serverUrl.endsWith("/")) {
+            serverUrl = serverUrl + "/";
         }
         StringBuffer testUrl = new StringBuffer(serverUrl);
-        testUrl.append(AppMIDlet.getInstance().getPropertyServerRoot()).append(NdgConsts.SERVLET_CHECK_URL);
+        testUrl.append(NdgConsts.SERVLET_CHECK_URL);
         HttpConnection hc = null;
         try {
             hc = (HttpConnection) Connector.open(testUrl.toString());

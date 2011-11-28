@@ -11,6 +11,4 @@ MicroEdition-Profile: MIDP-2.0
 Nokia-MIDlet-On-Screen-Keypad: no
 app-language: device-language
 app-msisdn: +12345678
-server-root: /
-
 server-url: http://localhost:8080

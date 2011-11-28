@@ -280,15 +280,17 @@ abstract class ContainerUI extends Container implements FocusListener {
         refreshTheme();
     }
 
+    public static boolean blockVal = true;
     public void focusLost(Component cmpnt) {
         if(!cmpnt.getComponentForm().isVisible()){
             return;
         }
 
-        if (!validate()) {
-            showBadInputError();
+        if ( !validate() && blockVal) {
+            blockVal = false;
             cmpnt.requestFocus();
-
+            showBadInputError();
+            blockVal = true;
             return;
         }
         getStyle().setBorder(Border.createBevelLowered(NDGStyleToolbox.getInstance().focusLostColor,

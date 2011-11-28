@@ -31,8 +31,6 @@ public class NdgConsts {
     public static String OPENROSA_STANDARD_NAME = "OpenRosa Protocol";
     public static final String DDMMYYYY = "DD/MM/YYYY";
     public static final String MMDDYYYY = "MM/DD/YYYY";
-    public static final String CHECK_SERVER_SERVLET = "/checkServer";
-    public static final String SERVER_ROOT = "/ndg-server";
     public static final String SERVLET_POST_RESULTS = "PostResults";
     public static final String SERVLET_RECEIVE_SURVEY = "ReceiveSurvey";
     public static final String SERVLET_CLIENT_UPDATE = "ClientUpdate";

@@ -39,7 +39,6 @@ public class SettingsStructure {
     private static final String DEFAULT_LANGUAGE_NAME = "Default (English)";
     private static final String DEFAULT_LANGUAGE_LOCALE = "en-GB";
     private String server_url = null;
-    private String server_root = AppMIDlet.getInstance().getPropertyServerRoot();
     private int splash_time = DEFAULT_SPLASH_TIME;
     private int isRegistered_flag = DEFAULT_IS_REGISTERED;
     private boolean gps_configured = DEFAULT_GPS;
@@ -214,16 +213,16 @@ public class SettingsStructure {
     }
 
     public String getUpdateCheckURL() {
-        return new StringBuffer(server_url).append(server_root).append(NdgConsts.SERVLET_CLIENT_UPDATE).toString();
+        return new StringBuffer(server_url).append(NdgConsts.SERVLET_CLIENT_UPDATE).toString();
     }
 
     public void setServerUrl(String _url) {
-        server_url = _url;
-    }
-
-    public void setServerRoot(String root)
-    {
-        server_root = root;
+        if(_url.endsWith("/"))
+        {
+            server_url = _url;
+        } else {
+            server_url = _url + "/";
+        }
     }
 
     public String getDateFormatString(){
@@ -248,35 +247,29 @@ public class SettingsStructure {
     }
 
     public String getPostResultsUrl() {
-        return new StringBuffer(server_url).append(server_root).append(NdgConsts.SERVLET_POST_RESULTS).toString();
+        return new StringBuffer(server_url).append(NdgConsts.SERVLET_POST_RESULTS).toString();
     }
 
     public String getTestAuthorizationUrl() {
-        return new StringBuffer(server_url).append(server_root).append(NdgConsts.SERVLET_CHECK_AUTHORIZATION).toString();
-    }
-
-    public String getServerRoot() {
-        return server_root;
+        return new StringBuffer(server_url).append(NdgConsts.SERVLET_CHECK_AUTHORIZATION).toString();
     }
 
     public String getReceiveSurveyURL(){
-        return new StringBuffer(server_url).append(server_root).append(NdgConsts.SERVLET_RECEIVE_SURVEY).toString();
+        return new StringBuffer(server_url).append(NdgConsts.SERVLET_RECEIVE_SURVEY).toString();
     }
 
     public String getLocalizationServingTextURL() {
-        return new StringBuffer(server_url).append(server_root).
-                        append(NdgConsts.SERVLET_LOCALIZATION).
+        return new StringBuffer(server_url).append(NdgConsts.SERVLET_LOCALIZATION).
                         append('/').append(NdgConsts.SERVLET_LANGUAGE_TEXT).toString();
     }
 
     public String getLocalizationServingFontURL() {
-        return new StringBuffer(server_url).append(server_root).
-                        append(NdgConsts.SERVLET_LOCALIZATION).
+        return new StringBuffer(server_url).append(NdgConsts.SERVLET_LOCALIZATION).
                         append('/').append(NdgConsts.SERVLET_LANGUAGE_FONT).toString();
     }
 
     public String getLanguageListURL() {
-        return new StringBuffer(server_url).append(server_root).append(NdgConsts.SERVLET_LANGUAGE_LIST).toString();
+        return new StringBuffer(server_url).append(NdgConsts.SERVLET_LANGUAGE_LIST).toString();
     }
 
     public void setRegisteredFlag(int _flag) {
