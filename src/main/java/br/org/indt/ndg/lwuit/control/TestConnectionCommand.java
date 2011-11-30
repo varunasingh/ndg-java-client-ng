@@ -1,5 +1,6 @@
 package br.org.indt.ndg.lwuit.control;
 
+import br.org.indt.ndg.lwuit.ui.WaitingScreen;
 import br.org.indt.ndg.mobile.Resources;
 import com.sun.lwuit.Command;
 import br.org.indt.ndg.mobile.submit.TestConnection;
@@ -19,6 +20,7 @@ public class TestConnectionCommand extends CommandControl {
     }
 
     protected void doAction(Object parameter) {
+        WaitingScreen.show( Resources.CONNECTING );
         TestConnection.getInstance().doTest();
     }
 }

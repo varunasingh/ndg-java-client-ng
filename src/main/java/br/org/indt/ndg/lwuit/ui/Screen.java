@@ -2,6 +2,7 @@ package br.org.indt.ndg.lwuit.ui;
 
 import br.org.indt.ndg.lwuit.extended.Form;
 import br.org.indt.ndg.lwuit.control.Event;
+import br.org.indt.ndg.mobile.logging.Logger;
 import com.sun.lwuit.layouts.BoxLayout;
 import com.sun.lwuit.plaf.UIManager;
 import com.sun.lwuit.util.Resources;

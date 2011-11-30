@@ -268,6 +268,10 @@ public class SettingsStructure {
                         append('/').append(NdgConsts.SERVLET_LANGUAGE_FONT).toString();
     }
 
+    public String getTestConnectionUrl() {
+        return new StringBuffer(server_url).append(NdgConsts.SERVLET_TEST_CONNECTION).toString();
+    }
+
     public String getLanguageListURL() {
         return new StringBuffer(server_url).append(NdgConsts.SERVLET_LANGUAGE_LIST).toString();
     }

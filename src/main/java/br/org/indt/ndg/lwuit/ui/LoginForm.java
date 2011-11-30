@@ -1,5 +1,6 @@
 package br.org.indt.ndg.lwuit.ui;
 
+import br.org.indt.ndg.lwuit.control.CancelLoginCommand;
 import br.org.indt.ndg.lwuit.control.ExitCommand;
 import br.org.indt.ndg.lwuit.control.LoginCommand;
 import br.org.indt.ndg.lwuit.extended.DescriptiveField;
@@ -29,7 +30,7 @@ public class LoginForm extends Screen implements ActionListener{
         form.removeAll();
         form.removeAllCommands();
 
-        form.addCommand(ExitCommand.getInstance().getCommand());
+        form.addCommand(CancelLoginCommand.getInstance().getCommand());
         form.addCommand(LoginCommand.getInstance().getCommand());
 
         try{
@@ -86,8 +87,8 @@ public class LoginForm extends Screen implements ActionListener{
             strTab[0] = textAreaUser.getText();
             strTab[1] = textAreaPassword.getText();
             LoginCommand.getInstance().execute(strTab);
-        }else if (obj == ExitCommand.getInstance().getCommand()) {
-            ExitCommand.getInstance().execute(null);
+        } else if(obj == CancelLoginCommand.getInstance().getCommand()) {
+            CancelLoginCommand.getInstance().execute(null);
         }
     }
 
