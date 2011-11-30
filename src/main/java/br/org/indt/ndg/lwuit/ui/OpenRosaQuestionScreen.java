@@ -614,7 +614,10 @@ class XfoilTimeFieldUI extends ContainerUI {
 class XfoilMultipleChoiceFieldUI extends ContainerUI {
 
     private Vector cbs = new Vector();
-
+    private String[] names = null;
+    private String[] values = null;
+    
+    
     public XfoilMultipleChoiceFieldUI(BoundElement element) {
         super(element);
         addQuestionName();
@@ -626,14 +629,26 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
     }
 
     private String getSelectedString(){
-        String values = "";
+        String valStr = "";
         for (int i = 0; i < cbs.size(); i++) {
             CheckBox cb = (CheckBox)cbs.elementAt(i);
             if( cb.isSelected() ) {
-                values = values.concat(cb.getText() + " ");
+                String tempVal = getValue( cb.getText() ) + " ";
+                if( tempVal != null ){
+                    valStr += tempVal + " ";
+                }
             }
         }
-        return values;
+        return valStr;
+    }
+    
+    private String getValue( String label ){
+        for(int i = 0; i < names.length; i++ ){
+            if( names[i].equals( label ) ){
+                return values[i];
+            }
+        } 
+        return null;
     }
 
     public void setEnabled( boolean enabled ) {
@@ -664,8 +679,8 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
         }
 
         int length = choices.getLength();
-        String[] names = new String[length];
-        String[] values = new String[length];
+        names = new String[length];
+        values = new String[length];
         boolean[] selected = new boolean[length];
 
 
@@ -673,8 +688,8 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
         for (int i = 0; i < length; i++) {
             XFormsElement n = (XFormsElement) choices.item(i);
             String label = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(n);
-            String value = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(n);
-
+            String value = getValueForItemElement( n );
+            
             if (!value.equals("") && chosenVal.indexOf(" " + value + " ") >= 0) {
                 selected[i] = true;
             } else {
@@ -690,6 +705,17 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
             cbs.addElement(cb);
             addComponent(cb);
         }
+    }
+    
+    private String getValueForItemElement( XFormsElement element ){
+        for( int i = 0; i < element.getChildCount(); i++ ){
+            Node nodeItem = element.getChild( i );
+            if (nodeItem.getLocalName() != null
+                    && nodeItem.getLocalName().compareTo("value") == 0) {
+                return nodeItem.getText();
+            }
+        }
+        return "";
     }
 }
 

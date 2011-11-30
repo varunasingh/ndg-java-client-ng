@@ -15,8 +15,10 @@ import br.org.indt.ndg.mobile.FileSystem;
 import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.multimedia.Base64Coder;
 import com.nokia.xfolite.xforms.dom.BoundElement;
+import com.nokia.xfolite.xforms.dom.XFormsElement;
 import com.nokia.xfolite.xforms.model.datatypes.DataTypeBase;
-import com.sun.lwuit.Component;
+import com.nokia.xfolite.xml.dom.Node;
+import com.nokia.xfolite.xml.xpath.NodeSet;
 import com.sun.lwuit.Container;
 import com.sun.lwuit.Font;
 import com.sun.lwuit.Image;
@@ -130,12 +132,50 @@ public class OpenRosaResultPreviewView extends Screen implements ActionListener 
         form.addComponent(container);
     }
 
-    public void addSelectPreview(BoundElement element){
-        String questionLabel = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(element);
-        String questionValue = element.getStringValue();
-        questionValue = questionValue.replace(' ', '#');
+    public void addSelectPreview(BoundElement bindElem){
+        
+        NodeSet choices = new NodeSet();
 
-        addQuestionComponent(questionLabel, questionValue);
+        int count = bindElem.getChildCount();
+        for (int idx = 0; idx < count; idx++) {
+            Node nodeItem = bindElem.getChild(idx);
+            if (nodeItem.getLocalName() != null
+                    && nodeItem.getLocalName().compareTo("item") == 0) {
+                choices.AddNode(nodeItem);
+            }
+        }
+
+        int length = choices.getLength();
+
+        String chosenVal = " " + bindElem.getStringValue() + " ";
+        
+        String result = "";
+        
+        for (int i = 0; i < length; i++) {
+            XFormsElement n = (XFormsElement) choices.item(i);
+            String value = getValueForItemElement(n);
+            
+            if (!value.equals("") && chosenVal.indexOf(" " + value + " ") >= 0) {
+                result += "#" + OpenRosaSurvey.getResourceManager().tryGetLabelForElement(n) + " ";
+            }
+
+        }
+        
+        String questionLabel = OpenRosaSurvey.getResourceManager().tryGetLabelForElement( bindElem );
+
+        addQuestionComponent( questionLabel, result );
+    }
+    
+    
+    private String getValueForItemElement( XFormsElement element ){
+        for( int i = 0; i < element.getChildCount(); i++ ){
+            Node nodeItem = element.getChild( i );
+            if (nodeItem.getLocalName() != null
+                    && nodeItem.getLocalName().compareTo("value") == 0) {
+                return nodeItem.getText();
+            }
+        }
+        return "";
     }
 
     public void addInputPreview(BoundElement element){
