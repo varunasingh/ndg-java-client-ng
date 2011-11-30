@@ -179,10 +179,10 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
         Object cmd = ae.getSource();
         if ( cmd == BackToCategoryCommand.getInstance().getCommand() ) {
             if( isFormChanged() ){
-                group.setChanged( true );
                 if ( !commitValues() ) {
                     return;
                 }
+                group.setChanged( true );
             }
             BackToCategoryCommand.getInstance().execute( null );
         }
@@ -263,13 +263,13 @@ abstract class ContainerUI extends Container implements FocusListener {
         GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
         if (constraint != null && !constraint.equals( "" ) ) {
             GeneralAlert.getInstance().show(
-                                        Resources.CMD_SAVE,
+                                        Resources.CONSTRAINTS,
                                         constraint,
                                         GeneralAlert.WARNING);
 
         } else {
             GeneralAlert.getInstance().show(
-                    Resources.CMD_SAVE,
+                    Resources.CONSTRAINTS,
                     Resources.OR_INVALID_INPUT,
                     GeneralAlert.WARNING);
         }

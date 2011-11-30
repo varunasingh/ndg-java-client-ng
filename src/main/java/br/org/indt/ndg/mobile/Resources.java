@@ -270,6 +270,7 @@ public class Resources {
     public static final String NO_NDG_SERVER = Localization.getMessage("QTJ_NO_NDG_SERVER");
     public static final String SERVERURL = Localization.getMessage("QTJ_SERVERURL");
     public static final String LOGIN = Localization.getMessage("QTJ_LOGIN");
+    public static final String CONSTRAINTS = Localization.getMessage("QTJ_CONSTRAINTS");
 
     private boolean error = false;
     public static Image check;
