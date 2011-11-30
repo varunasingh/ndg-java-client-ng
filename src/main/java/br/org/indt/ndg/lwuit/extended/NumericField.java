@@ -18,7 +18,7 @@ public class NumericField extends TextField implements DataChangedListener {
 
     public NumericField( int length, boolean decimal ) {
         super();
-        setConstraint(DECIMAL);
+        setConstraint(DECIMAL);//NUMERIC constrains does not allow to use negative numbers
         m_length = length;
         m_decimal = decimal;
         addDataChangeListener(this);
@@ -45,6 +45,7 @@ public class NumericField extends TextField implements DataChangedListener {
             setText(text);
         }
     }
+
     private void checkDots() {
         String text = "" + getText();
         int firstDot = text.indexOf('.');
@@ -93,7 +94,7 @@ public class NumericField extends TextField implements DataChangedListener {
         }
     }
 
-    public void dataChanged(int type, int index) {   
+    public void dataChanged(int type, int index) {
         checkDots();
         checkPlusMinus();
         checkLength();

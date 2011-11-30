@@ -136,8 +136,10 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
                     question = new XfoilDescriptiveFieldUI(bindElem);
                     break;
                 case DataTypeBase.XML_SCHEMAS_DECIMAL:
+                    question = new XfoilNumericFieldUI(bindElem, true);
+                    break;
                 case DataTypeBase.XML_SCHEMAS_INTEGER:
-                    question = new XfoilNumericFieldUI(bindElem);
+                    question = new XfoilNumericFieldUI(bindElem, false);
                     break;
                 default:
                 case DataTypeBase.XML_SCHEMAS_UNKNOWN:
@@ -476,10 +478,10 @@ class XfoilNumericFieldUI extends ContainerUI {
 
     NumericField nfNumber = null;
 
-    public XfoilNumericFieldUI(BoundElement element) {
+    public XfoilNumericFieldUI(BoundElement element, boolean isDecimal) {
         super(element);
         addQuestionName();
-        addNumericQuestion(element);
+        addNumericQuestion(element, isDecimal);
     }
 
     public void commitValue() {
@@ -499,9 +501,9 @@ class XfoilNumericFieldUI extends ContainerUI {
         }
     }
 
-    private void addNumericQuestion(BoundElement bindElem) {
+    private void addNumericQuestion(BoundElement bindElem, boolean isDecimal) {
         String value = bindElem.getStringValue().trim();
-        nfNumber = new NumericField(50, true);  // decimals allowed?
+        nfNumber = new NumericField(50, isDecimal);
         nfNumber.setFocusable(true);
         if (value != null) {
             nfNumber.setText(value);
