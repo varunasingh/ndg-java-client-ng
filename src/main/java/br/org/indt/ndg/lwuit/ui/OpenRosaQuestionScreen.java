@@ -202,7 +202,12 @@ abstract class ContainerUI extends Container implements FocusListener {
     protected OpenRosaQuestionScreen parentScreen = null;
 
     protected void commitValue(String input) {
-        element.setStringValue(input);
+        if( !element.getBooleanState( MIPExpr.RELEVANT ) ){
+            element.setStringValue("");
+        }else{
+            element.setStringValue(input);
+        }
+
         element.getModel().recalculate();
 
         if( parentScreen != null ){
@@ -244,13 +249,17 @@ abstract class ContainerUI extends Container implements FocusListener {
         boolean relevant = element.getBooleanState( MIPExpr.RELEVANT );
         setEnabled( relevant );
     }
+
     public void setParent( OpenRosaQuestionScreen screen ){
         this.parentScreen = screen;
     }
 
     protected boolean validate(){
-        commitValue();
-        return element.getBooleanState( MIPExpr.CONSTRAINT );
+        if( element.getBooleanState( MIPExpr.RELEVANT ) ){
+            commitValue();
+            return element.getBooleanState( MIPExpr.CONSTRAINT );
+        }else
+            return true;
     }
 
     public BoundElement getElement() {
@@ -359,11 +368,15 @@ class XfoilPhotoFieldUi extends ContainerUI implements  ActionListener, CameraMa
     }
 
     public boolean isChanged(){
+        if( !element.getBooleanState( MIPExpr.RELEVANT ) ){
+            return true;
+        }
         return isChanged;
     }
 
     public void commitValue() {
 //        element.setStringValue(OpenRosaCameraManager.getInstance().getImageStringValue());
+
         commitValue( OpenRosaCameraManager.getInstance().getImageStringValue() );
     }
 
@@ -453,6 +466,9 @@ class XfoilDescriptiveFieldUI extends ContainerUI {
     }
 
     public boolean isChanged(){
+        if( !element.getBooleanState( MIPExpr.RELEVANT ) ){
+            return true;
+        }
         if(tfDesc.getText().equals(element.getStringValue())){
             return false;
         }else{
@@ -495,6 +511,10 @@ class XfoilNumericFieldUI extends ContainerUI {
     }
 
     public boolean isChanged(){
+        if( !element.getBooleanState( MIPExpr.RELEVANT ) ){
+            return true;
+        }
+
         if(nfNumber.getText().equals(element.getStringValue())){
             return false;
         }else{
@@ -533,6 +553,9 @@ class XfoilDateFieldUI extends ContainerUI {
     }
 
     public boolean isChanged(){
+        if( !element.getBooleanState( MIPExpr.RELEVANT ) ){
+            return true;
+        }
 
         String dateStr = OpenRosaUtils.getStringFromDate(dfDate.getDate());
         if(dateStr.equals(element.getStringValue())){
@@ -596,6 +619,10 @@ class XfoilTimeFieldUI extends ContainerUI {
     }
 
     public boolean isChanged() {
+        if( !element.getBooleanState( MIPExpr.RELEVANT ) ){
+            return true;
+        }
+
         Date timeUi = dfTime.getTime();
         String savedTime = element.getStringValue();
 
@@ -660,6 +687,10 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
     }
 
     public boolean isChanged(){
+        if( !element.getBooleanState( MIPExpr.RELEVANT ) ){
+            return true;
+        }
+
         if(getSelectedString().equals(element.getStringValue())){
             return false;
         }else{
@@ -744,6 +775,10 @@ class XfoilExclusiveChoiceFieldUI extends ContainerUI {
     }
 
     public boolean isChanged(){
+        if( !element.getBooleanState( MIPExpr.RELEVANT ) ){
+            return true;
+        }
+
         if(getSelectedString().equals(element.getStringValue())){
             return false;
         }else{
