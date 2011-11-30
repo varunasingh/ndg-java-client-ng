@@ -191,9 +191,10 @@ public class OpenRosaResultPreviewView extends Screen implements ActionListener 
         }
 
         if(element.getDataType().getBaseTypeID() == DataTypeBase.XML_SCHEMAS_DATE){
-//            questionValue = toUserFormat(questionValue);
-            Date date = OpenRosaUtils.getDateFromString(questionValue);
-            questionValue = OpenRosaUtils.getUserFormatDate(date);
+            if(questionValue != null && !questionValue.equals( "" )){
+                Date date = OpenRosaUtils.getDateFromString(questionValue);
+                questionValue = OpenRosaUtils.getUserFormatDate(date);
+            }
         }
 
         addQuestionComponent(questionLabel, questionValue);
