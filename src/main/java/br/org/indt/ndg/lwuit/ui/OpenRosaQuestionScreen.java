@@ -175,17 +175,18 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
         return false;
     }
 
-
     public void actionPerformed( ActionEvent ae ) {
         Object cmd = ae.getSource();
         if ( cmd == BackToCategoryCommand.getInstance().getCommand() ) {
-            if( isFormChanged() && commitValues() ){
+            if( isFormChanged() ){
                 group.setChanged( true );
+                if ( !commitValues() ) {
+                    return;
+                }
             }
             BackToCategoryCommand.getInstance().execute( null );
         }
     }
-
 
     public void refreshAll(){
         for(int idx = 0; idx < containers.size(); idx++ ){
@@ -616,8 +617,8 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
     private Vector cbs = new Vector();
     private String[] names = null;
     private String[] values = null;
-    
-    
+
+
     public XfoilMultipleChoiceFieldUI(BoundElement element) {
         super(element);
         addQuestionName();
@@ -641,13 +642,13 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
         }
         return valStr;
     }
-    
+
     private String getValue( String label ){
         for(int i = 0; i < names.length; i++ ){
             if( names[i].equals( label ) ){
                 return values[i];
             }
-        } 
+        }
         return null;
     }
 
@@ -689,7 +690,7 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
             XFormsElement n = (XFormsElement) choices.item(i);
             String label = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(n);
             String value = getValueForItemElement( n );
-            
+
             if (!value.equals("") && chosenVal.indexOf(" " + value + " ") >= 0) {
                 selected[i] = true;
             } else {
@@ -706,7 +707,7 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
             addComponent(cb);
         }
     }
-    
+
     private String getValueForItemElement( XFormsElement element ){
         for( int i = 0; i < element.getChildCount(); i++ ){
             Node nodeItem = element.getChild( i );

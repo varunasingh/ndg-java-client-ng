@@ -133,7 +133,7 @@ public class OpenRosaResultPreviewView extends Screen implements ActionListener 
     }
 
     public void addSelectPreview(BoundElement bindElem){
-        
+
         NodeSet choices = new NodeSet();
 
         int count = bindElem.getChildCount();
@@ -148,25 +148,25 @@ public class OpenRosaResultPreviewView extends Screen implements ActionListener 
         int length = choices.getLength();
 
         String chosenVal = " " + bindElem.getStringValue() + " ";
-        
+
         String result = "";
-        
+
         for (int i = 0; i < length; i++) {
             XFormsElement n = (XFormsElement) choices.item(i);
             String value = getValueForItemElement(n);
-            
+
             if (!value.equals("") && chosenVal.indexOf(" " + value + " ") >= 0) {
                 result += "#" + OpenRosaSurvey.getResourceManager().tryGetLabelForElement(n) + " ";
             }
 
         }
-        
+
         String questionLabel = OpenRosaSurvey.getResourceManager().tryGetLabelForElement( bindElem );
 
         addQuestionComponent( questionLabel, result );
     }
-    
-    
+
+
     private String getValueForItemElement( XFormsElement element ){
         for( int i = 0; i < element.getChildCount(); i++ ){
             Node nodeItem = element.getChild( i );
