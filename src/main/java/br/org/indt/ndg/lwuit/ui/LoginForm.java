@@ -25,7 +25,7 @@ public class LoginForm extends Screen implements ActionListener{
     }
 
     protected void customize() {
-        setTitle(Resources.NEWUI_NOKIA_DATA_GATHERING, "User Authentication");//TODO localize
+        setTitle(Resources.NEWUI_NOKIA_DATA_GATHERING, Resources.USER_AUTHENTICATION);
         form.removeAll();
         form.removeAllCommands();
 
@@ -51,7 +51,7 @@ public class LoginForm extends Screen implements ActionListener{
     }
 
     private void addUserArea(){
-        TextArea labelUser = UIUtils.createQuestionName("User name");
+        TextArea labelUser = UIUtils.createQuestionName( Resources.USERNAME );
         form.addComponent(labelUser);
 
         textAreaUser = new DescriptiveField(50);
@@ -65,7 +65,7 @@ public class LoginForm extends Screen implements ActionListener{
     }
 
     private void addPasswordArea(){
-        TextArea labelPassword = UIUtils.createQuestionName( "Password" );//TODO localize
+        TextArea labelPassword = UIUtils.createQuestionName( Resources.PASSWORD );
         form.addComponent(labelPassword);
 
         textAreaPassword = new DescriptiveField(50);

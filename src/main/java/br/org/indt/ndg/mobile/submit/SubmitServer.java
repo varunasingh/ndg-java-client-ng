@@ -71,7 +71,7 @@ public class SubmitServer {
                 if(!SecureHttpConnector.isAuthorizedForPost())
                 {
                     GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-                    GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " Try login again", GeneralAlert.ERROR);//TODO localize
+                    GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " " + Resources.TRY_AGAIN, GeneralAlert.ERROR);
                     AppMIDlet.getInstance().showLoginScreen(SendResultCommand.getInstance());
                     return;
                 }
@@ -87,7 +87,7 @@ public class SubmitServer {
                     AppMIDlet.getInstance().getFileSystem().moveSentResult(filename);
                 }else if(responseCode == HttpConnection.HTTP_UNAUTHORIZED){
                     GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-                    GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " Try login again", GeneralAlert.ERROR);//TODO localize
+                    GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " " + Resources.TRY_AGAIN, GeneralAlert.ERROR);//TODO localize
                     SecureHttpConnector.setAuthenticationFail();
                     AppMIDlet.getInstance().showLoginScreen(SendResultCommand.getInstance());
                     return;
