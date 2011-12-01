@@ -25,7 +25,7 @@ public class SecureHttpConnector implements HttpConnection {
     private static String user = null;
     private static String password = null;
     private static boolean logged = false;
-
+    private static boolean firstTimeLogging = true;
 
     private static DigestAuthResponse digestResponse = null;
 
@@ -44,6 +44,12 @@ public class SecureHttpConnector implements HttpConnection {
             conn.setRequestProperty(AUTHORIZATION, digestResponse.getDigestHeader(conn));
         }
         return conn;
+    }
+
+    public static boolean isLoggingFirstTime() {
+        boolean retval = firstTimeLogging;
+        firstTimeLogging = false;
+        return retval;
     }
 
     private SecureHttpConnector(String url) throws IOException {

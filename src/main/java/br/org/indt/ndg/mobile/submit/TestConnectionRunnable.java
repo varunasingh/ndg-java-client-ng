@@ -38,8 +38,10 @@ public class TestConnectionRunnable implements Runnable {
                     AppMIDlet.getInstance().setDisplayable(SurveyList.class);
 
                 } else if (responseCode == HttpConnection.HTTP_UNAUTHORIZED) {
-                    GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-                    GeneralAlert.getInstance().showCodedAlert(Resources.TESTING_CONNECTION, String.valueOf(responseCode), GeneralAlert.INFO);
+                    if(!SecureHttpConnector.isLoggingFirstTime()) {
+                        GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+                        GeneralAlert.getInstance().showCodedAlert(Resources.TESTING_CONNECTION, String.valueOf(responseCode), GeneralAlert.INFO);
+                    }
                     SecureHttpConnector.setAuthenticationFail();
                     AppMIDlet.getInstance().showLoginScreen(TestConnectionCommand.getInstance());
                 } else {

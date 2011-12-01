@@ -271,8 +271,10 @@ public class DownloadNewSurveys implements Runnable {
                 cancelOperation();
 
                 if(responseCode == HttpConnection.HTTP_UNAUTHORIZED){
-                    GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
-                    GeneralAlert.getInstance().showCodedAlert(Resources.CHECK_NEW_SURVEYS, String.valueOf(responseCode), GeneralAlert.INFO);
+                    if(!SecureHttpConnector.isLoggingFirstTime()) {
+                        GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+                        GeneralAlert.getInstance().showCodedAlert(Resources.CHECK_NEW_SURVEYS, String.valueOf(responseCode), GeneralAlert.INFO);
+                    }
                     SecureHttpConnector.setAuthenticationFail();
                     AppMIDlet.getInstance().showLoginScreen(CheckNewSurveysCommand.getInstance());
                 }else{
