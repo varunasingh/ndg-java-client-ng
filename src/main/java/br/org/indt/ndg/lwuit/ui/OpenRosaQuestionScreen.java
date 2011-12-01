@@ -15,6 +15,7 @@ import br.org.indt.ndg.lwuit.extended.TimeField;
 import br.org.indt.ndg.lwuit.model.ImageData;
 import br.org.indt.ndg.lwuit.ui.camera.CameraManagerListener;
 import br.org.indt.ndg.lwuit.ui.camera.OpenRosaCameraManager;
+import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaConstraintHelper;
 import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaUtils;
 import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaGroup;
 import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaQuestion;
@@ -557,12 +558,18 @@ class XfoilDateFieldUI extends ContainerUI {
             return true;
         }
 
-        String dateStr = OpenRosaUtils.getStringFromDate(dfDate.getDate());
+        String dateStr = OpenRosaUtils.getStringFromDate( dfDate.getDate() );
         if(dateStr.equals(element.getStringValue())){
             return false;
         }else{
             return true;
         }
+    }
+
+    protected boolean validate(){
+        boolean retVal = OpenRosaConstraintHelper.
+                                    validateDate(element.getConstraintString(), dfDate.getDate());
+        return retVal;
     }
 
     private void addDateQuestion(BoundElement bindElem) {
