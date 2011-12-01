@@ -16,11 +16,11 @@ import br.org.indt.ndg.mobile.xmlhandle.Parser;
 
 public class Settings {
     private SettingsStructure settingsStructure = new SettingsStructure();
-    
+
     public Settings() {
         loadSettingsInfo();
     }
-    
+
     public void writeSettings() {
         String filename = AppMIDlet.getInstance().getRootDir() + NdgConsts.SETTINGS_FILE;
         FileConnection fileConnection = null;
@@ -56,7 +56,7 @@ public class Settings {
             }
         }
     }
-    
+
     public void loadSettingsInfo() {
         createSettingsFile();
         parseSettingsFile();
@@ -70,11 +70,11 @@ public class Settings {
             writeSettings();
         }
     }
-    
+
     public SettingsStructure getStructure() {
         return settingsStructure;
     }
-    
+
     private void parseSettingsFile() {
         SettingsHandler sh = new SettingsHandler();
         sh.setSettingsStructure(settingsStructure);
@@ -82,7 +82,7 @@ public class Settings {
         Parser parser = new Parser(sh);
         parser.parseFile(AppMIDlet.getInstance().getRootDir() + NdgConsts.SETTINGS_FILE);
     }
-    
+
     private void deleteSettingsFile() {
         try {
             FileConnection conn = (FileConnection) Connector.open(AppMIDlet.getInstance().getRootDir() + NdgConsts.SETTINGS_FILE);
@@ -95,7 +95,7 @@ public class Settings {
             ex.printStackTrace();
         }
     }
-    
+
     private void createSettingsFile() {
         try {
             FileConnection conn = (FileConnection) Connector.open(AppMIDlet.getInstance().getRootDir() + NdgConsts.SETTINGS_FILE);
@@ -108,7 +108,7 @@ public class Settings {
                 outputStream.close();
                 conn.close();
             }
-             } catch (IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }

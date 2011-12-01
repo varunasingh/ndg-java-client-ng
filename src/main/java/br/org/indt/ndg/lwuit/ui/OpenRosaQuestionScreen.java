@@ -1,6 +1,7 @@
 package br.org.indt.ndg.lwuit.ui;
 
 import br.org.indt.ndg.lwuit.control.BackToCategoryCommand;
+import br.org.indt.ndg.lwuit.control.Event;
 import br.org.indt.ndg.lwuit.control.OpenFileBrowserCommand;
 import br.org.indt.ndg.lwuit.control.RemovePhotoCommand;
 import br.org.indt.ndg.lwuit.control.ShowPhotoCommand;
@@ -89,6 +90,14 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
         form.addCommandListener( this );
 
         appendQuestions();
+        registerEvent( new Event() {
+            protected void doAction( Object parameter ) {
+                if( containers != null && containers.size() > 0 ) {
+                    ((ContainerUI)containers.elementAt(0)).revalidate();
+                    form.scrollComponentToVisible((ContainerUI)containers.elementAt(0));// Scroll back to the first question
+                }
+            }
+        }, ON_SHOW );
     }
 
     private void appendQuestions(){

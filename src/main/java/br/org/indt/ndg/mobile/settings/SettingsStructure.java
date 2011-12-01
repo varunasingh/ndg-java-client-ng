@@ -64,7 +64,6 @@ public class SettingsStructure {
     }
 
     public void createDefaultSettings(PrintStream _out) throws UnsupportedEncodingException {
-
         // Reset to default values
         setLanguage(defaultLanguage.getLocale());
         setRegisteredFlag(DEFAULT_IS_REGISTERED);
@@ -78,6 +77,7 @@ public class SettingsStructure {
         setEncryptionConfigured(DEFAULT_ENCRIPTION_CONFIGURED);
         setEncryption(DEFAULT_ENCRYPTION);
         setAppVersion(AppMIDlet.getInstance().getAppVersion());
+        languages.removeAllElements();
         languages.addElement(defaultLanguage);
 
         saveSettings(_out);
