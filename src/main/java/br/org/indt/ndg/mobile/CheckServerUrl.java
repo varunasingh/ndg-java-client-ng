@@ -47,7 +47,9 @@ public class CheckServerUrl implements Runnable {
                 AppMIDlet.getInstance().getFileSystem().setCurrentServer( AppMIDlet.getInstance().getSettings().getStructure().getServerLocalDirName() );
                 Utils.createDirectory( AppMIDlet.getInstance().getFileSystem().getRoot() );
                 AppMIDlet.getInstance().getFileSystem().loadSurveyFiles();
-                AppMIDlet.getInstance().getSurveyList().refresh();
+                if ( AppMIDlet.getInstance().getSurveyList() != null ) {
+                    AppMIDlet.getInstance().getSurveyList().refresh();
+                }
 
                 onSuccess.execute( null );
             } else {
