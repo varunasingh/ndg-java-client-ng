@@ -13,11 +13,7 @@ public class OpenRosaGroup {
     private String label = null;
     private boolean isDefault = false; ///TODO remove
 
-
-
     private boolean changed = false;
-
-
 
     public OpenRosaGroup(){//creates default group
         questions = new Vector();
@@ -54,5 +50,9 @@ public class OpenRosaGroup {
 
     public Vector getQuestions(){
         return questions;
+    }
+
+    public String getName() {
+        return label;
     }
 }

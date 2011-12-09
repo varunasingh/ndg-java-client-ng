@@ -27,7 +27,6 @@ public class PersistenceManager {
 
     private static final int VERSION = 2;//1-without conditional categories;2-with conditional categories
     private static PersistenceManager instance = null;
-    private SaveResultsObserver m_saveObserver = null;
     private boolean error = false;
     private String resultId;
     private XFormsDocument xFormDoc = null;
@@ -58,8 +57,7 @@ public class PersistenceManager {
         return AppMIDlet.getInstance().getFileSystem().isLocalFile();
     }
 
-    public void saveOpenRosaResult(XFormsDocument document, SaveResultsObserver saveObserver, Date startDate) {
-        m_saveObserver = saveObserver;
+    public void saveOpenRosaResult(XFormsDocument document, Date startDate) {
         xFormDoc = document;
         this.startDate = startDate;
 
@@ -224,20 +222,13 @@ public class PersistenceManager {
         docElem.insertBefore(metaElem, docElem.getChild(0));
     }
 
-    private void resultsSaved() {
-        if (m_saveObserver != null) {
-            m_saveObserver.onResultsSaved();
-            m_saveObserver = null;
-        }
-    }
-
     class SaveXFormResultRunnable implements Runnable {
 
         public void run() {
             PersistenceManager.getInstance().saveSurvey();
             AppMIDlet.getInstance().getFileSystem().loadResultFiles();
             AppMIDlet.getInstance().setResultList(new br.org.indt.ndg.mobile.ResultList());
-            PersistenceManager.getInstance().resultsSaved();
+            AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.ResultList.class);
         }
     }
 }
