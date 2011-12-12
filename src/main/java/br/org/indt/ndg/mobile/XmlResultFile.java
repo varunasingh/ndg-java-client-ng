@@ -9,7 +9,8 @@ public class XmlResultFile {
     private String fileNameInDisc;
     
     public XmlResultFile(String displayName, String fileName){
-        this.fileDisplayName = displayName;
+        //this.fileDisplayName = displayName;
+        this.fileDisplayName = fileName.substring( fileName.lastIndexOf('_') + 1, fileName.indexOf(".xml"));
         this.fileNameInDisc = fileName;
     }
 

@@ -4,6 +4,7 @@ package br.org.indt.ndg.lwuit.control;
 import br.org.indt.ndg.lwuit.ui.GeneralAlert;
 import br.org.indt.ndg.lwuit.ui.WaitingScreen;
 import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaUtils;
+import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaSurvey;
 import br.org.indt.ndg.mobile.AppMIDlet;
 import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.logging.Logger;
@@ -104,19 +105,19 @@ public class PersistenceManager {
         outputFile.close();
     }
 
-    private void saveSurvey() {
+    private void saveResult() {
         if (AppMIDlet.getInstance().getSettings() != null
                 && AppMIDlet.getInstance().getSettings().getStructure().isEncryptionConfigured()) {
             encryption = AppMIDlet.getInstance().getSettings().getStructure().getEncryption();
         }
         String surveyId = ""; //TODO get OpenRosa surveyId
         boolean isLocalFile = AppMIDlet.getInstance().getFileSystem().isLocalFile();
-        String surveyFilename = getSurveyFilename(surveyId, isLocalFile);
-        String surveyFilepath = getSurveyFilePath(surveyFilename);
-        resultId = extractResultId(surveyFilename);
+        String resultFilename = getResultFilename(surveyId, isLocalFile);
+        String resultFilepath = getResultFilePath(resultFilename);
+        resultId = extractResultId(resultFilename);
 
         try {
-            persistOpenRosaResult(surveyFilepath, surveyFilename, isLocalFile);
+            persistOpenRosaResult(resultFilepath, resultFilename, isLocalFile);
         } catch (Exception e) {
             Logger.getInstance().log(e.getMessage());
             e.printStackTrace();
@@ -125,18 +126,24 @@ public class PersistenceManager {
         }
     }
 
-    private void persistOpenRosaResult(String surveyFilepath, String surveyFilename, boolean fileExists) {
+    private void persistOpenRosaResult(String resultFilepath, String resultFilename, boolean fileExists) {
         if (xFormDoc == null) {
             throw new IllegalArgumentException("Tried to save OpenRosa survey when document not available");
         }
         Document instanceDocument = xFormDoc.getModel().getDefaultInstance().getDocument();
         if (!fileExists) {
+            String firstResultFilename = ((OpenRosaSurvey)xFormDoc.getUserInterface()).getFirstTextAnswer();
+            if(firstResultFilename != null) {
+                resultFilepath = resultFilepath.substring(0, resultFilepath.indexOf(".xml")) + "_"+ firstResultFilename + ".xml";
+            } else {
+                resultFilepath = resultFilepath.substring(0, resultFilepath.indexOf(".xml")) + "_"+ resultFilename.substring(3);
+            }
             addOpenRosaMetadata(instanceDocument);
         }
 
         XFormsXMLSerializer serializer = new XFormsXMLSerializer();
         try {
-            FileConnection fCon = (FileConnection) Connector.open(surveyFilepath);
+            FileConnection fCon = (FileConnection) Connector.open(resultFilepath);
             if (!fCon.exists()) {
                 fCon.create();
             }
@@ -145,7 +152,7 @@ public class PersistenceManager {
             stream.close();
 
             if (encryption) {
-                encode(surveyFilepath, surveyFilename);
+                encode(resultFilepath, resultFilename);
             }
 
             fCon.close();
@@ -159,7 +166,7 @@ public class PersistenceManager {
      * @param isLocalFile   Indicates whether file already exists or new name should be generated
      * @return  Filename without survey directory part
      */
-    private String getSurveyFilename(String surveyId, boolean isLocalFile) {
+    private String getResultFilename(String surveyId, boolean isLocalFile) {
         String fname;
         if (isLocalFile) { //check whether to create new file or use existing surveyFilePathWithBinaries
             fname = AppMIDlet.getInstance().getFileSystem().getResultFilename();
@@ -170,7 +177,7 @@ public class PersistenceManager {
         return fname;
     }
 
-    private String getSurveyFilePath(String fname) {
+    private String getResultFilePath(String fname) {
         String surveyDir = AppMIDlet.getInstance().getFileSystem().getSurveyDirName();
         String filename;
 
@@ -225,7 +232,7 @@ public class PersistenceManager {
     class SaveXFormResultRunnable implements Runnable {
 
         public void run() {
-            PersistenceManager.getInstance().saveSurvey();
+            PersistenceManager.getInstance().saveResult();
             AppMIDlet.getInstance().getFileSystem().loadResultFiles();
             AppMIDlet.getInstance().setResultList(new br.org.indt.ndg.mobile.ResultList());
             AppMIDlet.getInstance().setDisplayable(br.org.indt.ndg.lwuit.ui.ResultList.class);

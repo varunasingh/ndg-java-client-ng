@@ -12,6 +12,7 @@ import com.nokia.xfolite.xforms.submission.MultipartRelatedSerializer;
 import com.nokia.xfolite.xforms.submission.XFormsXMLSerializer;
 import com.nokia.xfolite.xml.dom.Document;
 import com.nokia.xfolite.xml.dom.Element;
+import com.nokia.xfolite.xml.dom.Node;
 import com.nokia.xfolite.xml.dom.WidgetFactory;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +36,8 @@ public class OpenRosaSurvey implements UserInterface{
     private static OpenRosaResourceManager resourceManager = new OpenRosaResourceManager();
 
     private OpenRosaGroup currentGroup = null;
+
+    private static final char[] ILLEGAL_CHARACTERS = { '/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':' };
 
     public OpenRosaSurvey(){
 
@@ -189,5 +192,30 @@ public class OpenRosaSurvey implements UserInterface{
 
     public String getProperty( String string ) {
         return "";
+    }
+
+    public String getFirstTextAnswer() {
+        String retval = null;
+        for(int i = 0; groups != null && i < groups.size() && retval == null; i++) {
+            Vector groupQuestions = (( OpenRosaGroup ) groups.elementAt(i)).getQuestions();
+            for(int j = 0 ; groupQuestions != null && j < groupQuestions.size(); j++) {
+                OpenRosaQuestion currentQuestion = (OpenRosaQuestion) groupQuestions.elementAt(j);
+                if(currentQuestion.getType() == OpenRosaQuestion.TYPE_INPUT && currentQuestion.getBoundElement().getContext().contextNode.getText() != null) {
+                    Node questionNode =  currentQuestion.getBoundElement().getContext().contextNode;
+                    if(questionNode.getText() != null && !questionNode.getText().trim().equals("")) {
+                        retval = questionNode.getText();
+                        if(retval.length() > 10)
+                        {
+                            retval = retval.substring(0, 10);
+                        }
+                        for(int k = 0; k < ILLEGAL_CHARACTERS.length; k++) {
+                            retval = retval.replace(ILLEGAL_CHARACTERS[k], '_');
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return retval;
     }
  }
