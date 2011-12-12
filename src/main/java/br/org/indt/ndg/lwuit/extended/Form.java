@@ -1,6 +1,7 @@
 package br.org.indt.ndg.lwuit.extended;
 
 import br.org.indt.ndg.lwuit.ui.MenuCellRenderer;
+import br.org.indt.ndg.lwuit.ui.Screen;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
 import com.sun.lwuit.Command;
 import com.sun.lwuit.Component;
@@ -19,11 +20,14 @@ public class Form extends com.sun.lwuit.Form implements StyleListener {
     final static int MIN_MARGIN = 30;
     final static int LEFT_MARGIN_OFFSET = 10;
 
-    public Form() {
+    private Screen parent;
+
+    public Form( Screen parent ) {
         super();
         Style style = getSoftButtonStyle();
         style.setFont( NDGStyleToolbox.getInstance().menuStyle.unselectedFont );
         setSoftButtonStyle( style );
+        this.parent = parent;
     }
 
     protected Command showMenuDialog(Dialog menu) {
@@ -116,5 +120,9 @@ public class Form extends com.sun.lwuit.Form implements StyleListener {
         super.styleChanged(propertyName, source);
         getSoftButtonStyle().setFont( NDGStyleToolbox.getInstance().menuStyle.unselectedFont );
         this.invalidate();
+    }
+
+    protected void onShowCompleted() {
+        parent.onShowFromForm();
     }
 }

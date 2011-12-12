@@ -2,7 +2,6 @@ package br.org.indt.ndg.lwuit.ui;
 
 import br.org.indt.ndg.lwuit.extended.Form;
 import br.org.indt.ndg.lwuit.control.Event;
-import br.org.indt.ndg.mobile.logging.Logger;
 import com.sun.lwuit.layouts.BoxLayout;
 import com.sun.lwuit.plaf.UIManager;
 import com.sun.lwuit.util.Resources;
@@ -80,7 +79,7 @@ public abstract class Screen {
 
     protected final void createScreen() {
         titlebar = new TitleBar( " ", " " );
-        form = new Form();
+        form = new Form( this );
         form.setTitle(" ");
         form.getTitleComponent().setPreferredH(0);
         form.getTitleStyle().setBgPainter(titlebar);
@@ -90,10 +89,12 @@ public abstract class Screen {
         form.getMenuStyle().setFont( UIManager.getInstance().getComponentStyle("Command").getFont());
     }
 
-
     protected abstract void loadData();
 
     protected abstract void customize();
+
+    protected void onShowCompleted(){
+    }
 
     public static void setFontRes(Resources resources) {
         fontRes = resources;
@@ -116,6 +117,10 @@ public abstract class Screen {
             events.remove(type);
         }
         events.put(type, e);
+    }
+
+    public void onShowFromForm() {
+        onShowCompleted();
     }
 
     private void onShow() {

@@ -84,7 +84,7 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
         form.addCommand( BackToCategoryCommand.getInstance().getCommand() );
 
         try {
-        form.removeCommandListener( this );
+            form.removeCommandListener( this );
         } catch (NullPointerException npe) {
         }
         form.addCommandListener( this );
@@ -93,11 +93,16 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
         registerEvent( new Event() {
             protected void doAction( Object parameter ) {
                 if( containers != null && containers.size() > 0 ) {
-                    ((ContainerUI)containers.elementAt(0)).revalidate();
-                    form.scrollComponentToVisible((ContainerUI)containers.elementAt(0));// Scroll back to the first question
+                    form.scrollComponentToVisible((ContainerUI)containers.elementAt(0));// Scroll back to the first question. Form smooth scrolling move to onShowComleted.
                 }
             }
         }, ON_SHOW );
+    }
+
+    protected void onShowCompleted() {
+        if( containers != null && containers.size() > 0 ) {
+          ((ContainerUI)containers.elementAt(0)).revalidate();
+        }
     }
 
     private void appendQuestions(){
