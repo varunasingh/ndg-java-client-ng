@@ -24,8 +24,8 @@ public class RadioButton extends com.sun.lwuit.RadioButton implements FocusListe
     public RadioButton(String text) {
         super(text);
         addFocusListener(this);
-        getSelectedStyle().setFont(NDGStyleToolbox.fontMediumBold, false);
-        getUnselectedStyle().setFont(NDGStyleToolbox.fontMedium, false);
+        getSelectedStyle().setFont(NDGStyleToolbox.getInstance().listStyle.selectedFont, false);
+        getUnselectedStyle().setFont(NDGStyleToolbox.getInstance().listStyle.unselectedFont, false);
     }
 
     public RadioButton(String text, Image image){
@@ -35,12 +35,12 @@ public class RadioButton extends com.sun.lwuit.RadioButton implements FocusListe
 
     public void focusGained(Component cmp) {
         getStyle().setBgPainter(focusBGPainter);
-        getStyle().setFont( NDGStyleToolbox.fontMediumBold );
+        getStyle().setFont( NDGStyleToolbox.getInstance().listStyle.selectedFont );
     }
 
     public void focusLost(Component cmp) {
         getStyle().setBgPainter(bgPainter);
-        getStyle().setFont( NDGStyleToolbox.fontMedium );
+        getStyle().setFont( NDGStyleToolbox.getInstance().listStyle.unselectedFont);
     }
 
     public void useMoreDetails(boolean _val) {
@@ -63,7 +63,7 @@ public class RadioButton extends com.sun.lwuit.RadioButton implements FocusListe
             int x = getX() + getWidth() - (int)(img.getWidth()*1.5);
             int y = getY() + (getHeight() - img.getHeight())/2;
             g.drawImage(img, x, y);
-        } 
+        }
     }
 
     class FocusBGPainter implements Painter {
@@ -71,7 +71,7 @@ public class RadioButton extends com.sun.lwuit.RadioButton implements FocusListe
         public void paint(Graphics g, Rectangle rect) {
             int width = rect.getSize().getWidth();
             int height = rect.getSize().getHeight();
-            
+
             int endColor = NDGStyleToolbox.getInstance().listStyle.bgSelectedEndColor;
             int startColor = NDGStyleToolbox.getInstance().listStyle.bgSelectedStartColor;
             g.fillLinearGradient(startColor, endColor, rect.getX(), rect.getY(), width, height, false);

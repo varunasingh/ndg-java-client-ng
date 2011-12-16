@@ -16,20 +16,18 @@ import com.sun.lwuit.painter.BackgroundPainter;
  */
 public class CheckBox extends com.sun.lwuit.CheckBox implements FocusListener {
 
-    protected Painter focusBGPainter;
-    protected BackgroundPainter bgPainter;
+    protected final Painter focusBGPainter = new FocusBGPainter();
+    protected final BackgroundPainter bgPainter = new BackgroundPainter(this);
     private boolean hasOther;
     private String txtOther;
     private PointerListener mPointerListener = null;
 
     public CheckBox(String text) {
         super(text);
-        focusBGPainter = new FocusBGPainter();
-        bgPainter = new BackgroundPainter(this);
         addFocusListener(this);
         hasOther = false;
-        getSelectedStyle().setFont(NDGStyleToolbox.fontMediumBold, false);
-        getUnselectedStyle().setFont(NDGStyleToolbox.fontMedium, false);
+        getSelectedStyle().setFont(NDGStyleToolbox.getInstance().listStyle.selectedFont, false);
+        getUnselectedStyle().setFont(NDGStyleToolbox.getInstance().listStyle.unselectedFont, false);
     }
 
     public CheckBox(String text, PointerListener listener) {
