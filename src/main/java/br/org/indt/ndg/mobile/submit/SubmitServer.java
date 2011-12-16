@@ -85,15 +85,22 @@ public class SubmitServer {
 
                 int responseCode = request.send();
 
-                if(responseCode == HttpConnection.HTTP_OK){
+                if (responseCode == HttpConnection.HTTP_OK) {
                     AppMIDlet.getInstance().getFileSystem().moveSentResult(filename);
-                }else if(responseCode == HttpConnection.HTTP_UNAUTHORIZED){
+                } else if(responseCode == HttpConnection.HTTP_UNAUTHORIZED) {
                     GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
                     GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, Resources.HTTP_UNAUTHORIZED + " " + Resources.TRY_AGAIN, GeneralAlert.ERROR);//TODO localize
                     SecureHttpConnector.setAuthenticationFail();
                     AppMIDlet.getInstance().showLoginScreen(SendResultCommand.getInstance());
                     return;
-                }else {
+                } else if ( responseCode == HttpConnection.HTTP_CONFLICT ) {
+                    m_filesNotSent.addElement(filename);
+                    GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+                    GeneralAlert.getInstance().show( Resources.WARNING_TITLE ,Resources.SURVEY_WRONG_USER , GeneralAlert.WARNING);
+                    SecureHttpConnector.setAuthenticationFail();
+                    AppMIDlet.getInstance().showLoginScreen(SendResultCommand.getInstance());
+                    return;
+                } else {
                     m_filesNotSent.addElement(filename);
                     GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
                     GeneralAlert.getInstance().showCodedAlert(Resources.NETWORK_FAILURE, String.valueOf(responseCode), GeneralAlert.ERROR);
