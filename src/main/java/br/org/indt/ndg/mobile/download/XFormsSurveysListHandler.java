@@ -55,8 +55,4 @@ public class XFormsSurveysListHandler extends SurveysListHandler {
         }
         m_currentTag = "";
     }
-
-    protected String titlePrefix() {
-        return "[OpenRosa]";
-    }
 }
