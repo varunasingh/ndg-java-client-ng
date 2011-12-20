@@ -17,17 +17,17 @@ public class UIUtils {
         item.setEditable(false);
         item.setFocusable(false);
         item.setColumns(NUMBER_OF_COLUMNS);
-        item.setRows(1);
-        item.setGrowByContent(false);
-        item.setText(aText.trim()+ "  ");
+        item.setRows(2);
+        item.setGrowByContent(true);
+        item.setText(aText.trim());
 
         int pw = Display.getInstance().getDisplayWidth() - 10;// magic number, it should rather be set to width of margins+borders+padding
         int w = aFont.stringWidth(aText);
         if (w >= pw) {
-            item.setGrowByContent(true);
-            item.setRows(2);
+            //item.setGrowByContent(true);
+            //item.setRows(2);
         } else {
-            item.setGrowByContent(false);
+            //item.setGrowByContent(false);
             item.setRows(1);
         }
         return item;

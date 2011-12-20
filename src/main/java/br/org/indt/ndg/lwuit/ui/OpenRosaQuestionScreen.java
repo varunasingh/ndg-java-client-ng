@@ -78,8 +78,8 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
 
         form.setLayout( new BoxLayout( BoxLayout.Y_AXIS ) );
         form.getContentPane().getStyle().setBorder( Border.createEmpty(), false );
-        form.setScrollAnimationSpeed( 500 );
-        form.setFocusScrolling( true );
+        form.setScrollAnimationSpeed( 100 );
+        form.setFocusScrolling( false );
 
         form.addCommand( BackToCategoryCommand.getInstance().getCommand() );
 
