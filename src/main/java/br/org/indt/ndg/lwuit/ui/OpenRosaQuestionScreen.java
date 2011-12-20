@@ -119,7 +119,7 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
                     comp = new XfoilMultipleChoiceFieldUI( que.getBoundElement() );
                     break;
                 case OpenRosaQuestion.TYPE_SELECT1:
-                    comp = new XfoilExclusiveChoiceFieldUI( que.getBoundElement() );
+                    comp = new XfoilExclusiveChoiceFieldUI( que.getBoundElement(), this );
                     break;
                 case OpenRosaQuestion.TYPE_UPLOAD_IMAGE:
                     comp = new XfoilPhotoFieldUi( que.getBoundElement() );
@@ -200,6 +200,13 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
                 group.setChanged( true );
             }
             BackToCategoryCommand.getInstance().execute( null );
+        } else if(cmd instanceof RadioButton) {
+            for (int i = 0; i < containers.size(); i++) {
+                if (((ContainerUI) containers.elementAt(i)).validate()) {
+                    ((ContainerUI) containers.elementAt(i)).commitValue();
+            }
+        }
+        refreshAll();
         }
     }
 
@@ -776,9 +783,17 @@ class XfoilExclusiveChoiceFieldUI extends ContainerUI {
 
     private ButtonGroup groupButton;
     private String[] values;
+    private ActionListener listener;
 
     public XfoilExclusiveChoiceFieldUI(BoundElement element) {
         super(element);
+        addQuestionName();
+        addSelect1Question(element);
+    }
+
+    public XfoilExclusiveChoiceFieldUI(BoundElement element, ActionListener listener) {
+        super(element);
+        this.listener = listener;
         addQuestionName();
         addSelect1Question(element);
     }
@@ -855,7 +870,7 @@ class XfoilExclusiveChoiceFieldUI extends ContainerUI {
             rb.useMoreDetails(values[i].equals("1"));
 //            rb.setOtherText(""); // TODO this probably should not be commented! for test only! //Initializes with empty string
             rb.setSelected(selected[i]);
-            //rb.addActionListener(new HandleMoreDetails()); // More Details
+            rb.addActionListener(listener);
             //rb.addFocusListener(this); // Controls when changing to a new question
             groupButton.add(rb);
             addComponent(rb);
