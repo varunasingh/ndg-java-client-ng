@@ -9,7 +9,6 @@ import br.org.indt.ndg.lwuit.ui.ServerUrlSelector;
 import java.io.IOException;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
-import javax.microedition.location.Location;
 import br.org.indt.ndg.mobile.settings.Settings;
 import br.org.indt.ndg.mobile.settings.LocationHandler;
 import br.org.indt.ndg.mobile.logging.Logger;
@@ -27,8 +26,6 @@ import java.util.Hashtable;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 import javax.microedition.io.file.FileSystemRegistry;
-import javax.microedition.location.Coordinates;
-import javax.microedition.location.LocationProvider;
 
 public class AppMIDlet extends MIDlet {
 
@@ -93,7 +90,8 @@ public class AppMIDlet extends MIDlet {
         settings = new Settings();
         Localization.initLocalizationSupport();
         resources = new Resources();
-        locationHandler = new LocationHandler();
+        if(System.getProperty("microedition.location.version") != null)
+            locationHandler = new LocationHandler();
 
         initLWUIT();
 
@@ -227,14 +225,9 @@ public class AppMIDlet extends MIDlet {
 
     public void continueAppLoading() {
         //check if location is available, if not turn off gps
-        if(getSettings().getStructure().getGpsConfigured()){
-            int status = locationHandler.connect();
-            if (status == LocationProvider.AVAILABLE ||
-                status == LocationProvider.TEMPORARILY_UNAVAILABLE) {
-            } else {
-                getSettings().getStructure().setGpsConfigured(false);
-            }
-        }
+        if(System.getProperty("microedition.location.version") != null)
+            LocationHelper.getInstance().checkAvailable();
+
         AppMIDlet.getInstance().getFileSystem().setCurrentServer( AppMIDlet.getInstance().getSettings().getStructure().getServerLocalDirName() );
         Utils.createDirectory( AppMIDlet.getInstance().getFileSystem().getRoot() );
         AppMIDlet.getInstance().getFileSystem().loadSurveyFiles();
@@ -254,20 +247,6 @@ public class AppMIDlet extends MIDlet {
 
     public LocationHandler getLocationHandler() {
         return this.locationHandler;
-    }
-
-    public Location getLocation() {
-        if ( locationHandler == null )
-            return null;
-        else
-            return locationHandler.getLocation();
-    }
-
-    public Coordinates getCoordinates() {
-        if ( getLocation() == null )
-            return null;
-        else
-            return getLocation().getQualifiedCoordinates();
     }
 
     public boolean locationObtained(){

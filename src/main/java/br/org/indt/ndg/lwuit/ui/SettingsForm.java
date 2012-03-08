@@ -33,7 +33,8 @@ public class SettingsForm extends Screen implements ActionListener{
 
     protected void loadData() {
         commandList = new Vector();
-        commandList.addElement( GPSCommand.getInstance() );
+        if(System.getProperty("microedition.location.version") != null)
+            commandList.addElement( GPSCommand.getInstance() );
         commandList.addElement( ResolutionSelectionViewCommand.getInstance() );
         commandList.addElement( SelectStyleViewCommand.getInstance() );
         commandList.addElement( ChangeServerUrlCommand.getInstance() );
