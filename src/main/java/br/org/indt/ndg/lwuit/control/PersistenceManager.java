@@ -6,6 +6,7 @@ import br.org.indt.ndg.lwuit.ui.WaitingScreen;
 import br.org.indt.ndg.lwuit.ui.openrosa.OpenRosaUtils;
 import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaSurvey;
 import br.org.indt.ndg.mobile.AppMIDlet;
+import br.org.indt.ndg.mobile.LocationHelper;
 import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.logging.Logger;
 import com.nokia.xfolite.xforms.dom.XFormsDocument;
@@ -38,6 +39,7 @@ public class PersistenceManager {
     private static String TIME_START_NAME = "orx:timeStart";
     private static String TIME_END_NAME = "orx:timeEnd";
     private static String DEVICE_ID_NAME = "orx:deviceID";
+    private static String GEOSTAMP_NAME = "orx:geostamp"; //Not OpenROSA
     private Date startDate;
 
     private PersistenceManager() {
@@ -215,6 +217,7 @@ public class PersistenceManager {
         Element timeStartElem = instanceDocument.createElement(TIME_START_NAME);
         Element timeEndElem = instanceDocument.createElement(TIME_END_NAME);
         Element deviceIdElem = instanceDocument.createElement(DEVICE_ID_NAME);
+        Element geostampElem = instanceDocument.createElement(GEOSTAMP_NAME);
 
         instanceElem.setText(generateUniqueID());
         deviceIdElem.setText(AppMIDlet.getInstance().getIMEI());
@@ -225,6 +228,21 @@ public class PersistenceManager {
         metaElem.appendChild(deviceIdElem);
         metaElem.appendChild(timeStartElem);
         metaElem.appendChild(timeEndElem);
+
+        if(AppMIDlet.getInstance().getSettings().getStructure().getGpsConfigured()) {
+            if (LocationHelper.getInstance().getLocation() == null ||
+                    LocationHelper.getInstance().getLocation().getQualifiedCoordinates() == null) {
+                GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+                GeneralAlert.getInstance().show(Resources.WARNING, Resources.ADD_LOCATION_FAILURE, GeneralAlert.WARNING);
+            }
+            else {
+                geostampElem.setText(Double.toString(LocationHelper.getInstance().getLocation()
+                        .getQualifiedCoordinates().getLatitude()) + " "
+                        + Double.toString(LocationHelper.getInstance().getLocation()
+                        .getQualifiedCoordinates().getLongitude()));
+                metaElem.appendChild(geostampElem);
+            }
+        }
 
         docElem.insertBefore(metaElem, docElem.getChild(0));
     }
