@@ -172,6 +172,11 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
                 ((ContainerUI) containers.elementAt(i)).showBadInputError();
                 break;
             }
+            if (((ContainerUI) containers.elementAt(i)).validateReq()) {
+                result = false;
+                ((ContainerUI) containers.elementAt(i)).showRequiredError();
+                break;
+            }
         }
         if(result == true) {
             for (int i = 0; i < containers.size(); i++) {
@@ -183,6 +188,10 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
 
     public boolean isFormChanged(){
         for (int i = 0; i < containers.size(); i++) {
+            if (((ContainerUI) containers.elementAt(i)).validateReq()) {
+                return true;
+            }
+
             if (((ContainerUI) containers.elementAt(i)).isChanged()){
                 return true;
             }
@@ -280,12 +289,29 @@ abstract class ContainerUI extends Container implements FocusListener {
         if( element.getBooleanState( MIPExpr.RELEVANT ) ){
             commitValue();
             return element.getBooleanState( MIPExpr.CONSTRAINT );
-        }else
+        } else {
             return true;
+        }
+    }
+    
+    protected boolean validateReq(){
+        if( element.getBooleanState( MIPExpr.REQUIRED ) && element.getStringValue().equals("")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public BoundElement getElement() {
         return element;
+    }
+    
+    public void showRequiredError() {
+        GeneralAlert.getInstance().addCommand(GeneralAlert.DIALOG_OK, true);
+        GeneralAlert.getInstance().show(
+                                        Resources.REQUIRED,
+                                        Resources.REQUIRED_MSG,
+                                        GeneralAlert.WARNING);
     }
 
     public void showBadInputError() {
@@ -315,18 +341,28 @@ abstract class ContainerUI extends Container implements FocusListener {
     }
 
     public static boolean blockVal = true;
+
     public void focusLost(Component cmpnt) {
         if(!cmpnt.getComponentForm().isVisible()){
             return;
         }
 
-        if ( !validate() && blockVal) {
+        if(!validate() && blockVal) {
             blockVal = false;
             cmpnt.requestFocus();
             showBadInputError();
             blockVal = true;
             return;
         }
+        
+        if(validateReq() && blockVal) {
+            blockVal = false;
+            cmpnt.requestFocus();
+            showRequiredError();
+            blockVal = true;
+            return;
+        }
+
         getStyle().setBorder(Border.createBevelLowered(NDGStyleToolbox.getInstance().focusLostColor,
                 NDGStyleToolbox.getInstance().focusLostColor,
                 NDGStyleToolbox.getInstance().focusLostColor,
@@ -672,7 +708,6 @@ class XfoilMultipleChoiceFieldUI extends ContainerUI {
     private Vector cbs = new Vector();
     private String[] names = null;
     private String[] values = null;
-
 
     public XfoilMultipleChoiceFieldUI(BoundElement element) {
         super(element);

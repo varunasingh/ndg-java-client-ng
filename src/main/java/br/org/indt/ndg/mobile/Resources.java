@@ -275,6 +275,9 @@ public class Resources {
     public static final String PASSWORD = Localization.getMessage("QTJ_PASSWORD");
     public static final String USER_AUTHENTICATION = Localization.getMessage("QTJ_USER_AUTHENTICATION");
     public static final String SURVEY_WRONG_USER = Localization.getMessage("QTJ_SURVEY_WRONG_USER");
+    
+    public static final String REQUIRED = Localization.getMessage("QTJ_REQUIRED");
+    public static final String REQUIRED_MSG = Localization.getMessage("QTJ_REQUIRED_MSG");
 
     private boolean error = false;
     public static Image check;
