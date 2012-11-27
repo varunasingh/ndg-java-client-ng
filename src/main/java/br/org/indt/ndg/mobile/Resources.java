@@ -278,6 +278,9 @@ public class Resources {
     
     public static final String REQUIRED = Localization.getMessage("QTJ_REQUIRED");
     public static final String REQUIRED_MSG = Localization.getMessage("QTJ_REQUIRED_MSG");
+    
+    public static final String RECORD_LOCATION = Localization.getMessage("QTJ_RECORD_LOC");
+    public static final String UPDATE_LOCATION = Localization.getMessage("QTJ_UPDATE_LOC");
 
     private boolean error = false;
     public static Image check;

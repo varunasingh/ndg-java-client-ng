@@ -23,6 +23,7 @@ import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaQuestion;
 import br.org.indt.ndg.lwuit.ui.openrosa.model.OpenRosaSurvey;
 import br.org.indt.ndg.lwuit.ui.style.NDGStyleToolbox;
 import br.org.indt.ndg.mobile.AppMIDlet;
+import br.org.indt.ndg.mobile.LocationHelper;
 import br.org.indt.ndg.mobile.Resources;
 import br.org.indt.ndg.mobile.multimedia.Base64Coder;
 import com.nokia.xfolite.xforms.dom.BoundElement;
@@ -158,7 +159,8 @@ public class OpenRosaQuestionScreen extends Screen implements ActionListener{
                     break;
                 default:
                 case DataTypeBase.XML_SCHEMAS_UNKNOWN:
-                    question = new XfoilMockComponent(bindElem);
+//                    question = new XfoilMockComponent(bindElem); 
+                    question = new XfoilLocationFieldUI(bindElem); // Using unknown since xfolite doesn't support location
             }
         }
        return question;
@@ -940,5 +942,87 @@ class XfoilMockComponent extends ContainerUI {
 
     private void addMockLabel() {
         addComponent(UIUtils.createQuestionName(Resources.UNSUPPORTED_TYPE));
+    }
+}
+
+class XfoilLocationFieldUI extends ContainerUI implements ActionListener {
+
+    private Button recordButton;
+    private TextArea mLocation;
+
+    public XfoilLocationFieldUI(BoundElement element){
+        super(element);
+        addQuestionName();
+        addLocationContainer(element);
+    }
+
+    public void focusGained(Component cmpnt) {
+    }
+
+    public void focusLost(Component cmpnt) {
+        super.focusLost(cmpnt);
+    }
+
+    public boolean isChanged(){
+        return mLocation.getText().equals(element.getStringValue()) ? false : true;
+    }
+
+    public void commitValue() {
+        if(LocationHelper.getInstance().getCurrentCoordinates() != null) {
+            commitValue(LocationHelper.getInstance().getCurrentCoordinates().getLatitude() + ", "
+                    + LocationHelper.getInstance().getCurrentCoordinates().getLongitude());
+        }
+    }
+
+    public void setEnabled(boolean enabled) {
+        super.setEnabled( enabled );
+        recordButton.setEnabled( enabled );
+    }
+
+    protected boolean validate() {
+        return true;
+    }
+
+    private void addLocationContainer(BoundElement bindElem) {
+        setLayout(new BoxLayout(BoxLayout.Y_AXIS));
+
+        mLocation = new TextArea();
+        mLocation.setFocusable(false);
+
+        recordButton = new Button();
+        recordButton.setText(Resources.RECORD_LOCATION);
+        recordButton.addActionListener(this);
+        recordButton.setAlignment(Component.CENTER);
+        recordButton.setFocusable(true);
+        recordButton.addFocusListener(this);
+        
+        updateRecordButton(bindElem);
+        
+        this.addComponent(mLocation);
+        this.addComponent(recordButton);
+    }
+
+    private void updateRecordButton(BoundElement bindElem) {
+        String value = bindElem.getStringValue().trim();
+        String button = null;
+
+        if(!value.equals("")) {
+            button = Resources.UPDATE_LOCATION;
+            mLocation.setText(value);
+        } else {
+            button = Resources.RECORD_LOCATION;
+            LocationHelper.getInstance().setCurrentCoordinates(null);
+        }
+
+        recordButton.setText(button);
+    }
+
+    public void actionPerformed(ActionEvent cmd) {
+        if ( cmd.getSource() instanceof Button ) {
+            recordButton.setText(Resources.UPDATE_LOCATION);
+            LocationHelper.getInstance().setCurrentCoordinates(LocationHelper.getInstance().getCoordinates());
+            mLocation.setText(LocationHelper.getInstance().getCurrentCoordinates().getLatitude() + ", "
+                            + LocationHelper.getInstance().getCurrentCoordinates().getLongitude());
+        }
     }
 }

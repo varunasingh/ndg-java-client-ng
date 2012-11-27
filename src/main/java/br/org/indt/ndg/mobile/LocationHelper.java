@@ -68,6 +68,10 @@ public class LocationHelper {
     public void setCurrentCoordinatesNull() {
         currentCoordinates = null;
     }
+    
+    public void setCurrentCoordinates(Coordinates coordinates) {
+        currentCoordinates = coordinates;
+    }
 
     public void setCurrentCoordinates(double latitude, double longitude, float altitude) {
         currentCoordinates = new Coordinates(latitude, longitude, altitude);

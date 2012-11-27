@@ -179,16 +179,15 @@ public class OpenRosaResultPreviewView extends Screen implements ActionListener 
     }
 
     public void addInputPreview(BoundElement element){
-
         String questionLabel = OpenRosaSurvey.getResourceManager().tryGetLabelForElement(element);
         String questionValue = "";
 
         DataTypeBase a = element.getDataType();
-        if (a != null && a.getBaseTypeID() == DataTypeBase.XML_SCHEMAS_UNKNOWN) {
-            questionValue = Resources.UNSUPPORTED_TYPE;
-        } else{
+//        if (a != null && a.getBaseTypeID() == DataTypeBase.XML_SCHEMAS_UNKNOWN) {
+//            questionValue = Resources.UNSUPPORTED_TYPE;       // commenting uknown schema as we are using it for location type
+//        } else{
             questionValue = element.getStringValue();
-        }
+//        }
 
         if(element.getDataType().getBaseTypeID() == DataTypeBase.XML_SCHEMAS_DATE){
             if(questionValue != null && !questionValue.equals( "" )){
