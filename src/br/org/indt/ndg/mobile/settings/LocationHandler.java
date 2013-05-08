@@ -6,20 +6,20 @@ import javax.microedition.location.Criteria;
 import javax.microedition.location.Location;
 import javax.microedition.location.LocationListener;
 import javax.microedition.location.LocationProvider;
-import javax.microedition.location.LocationException;
+//import javax.microedition.location.LocationException;
 
 //new libraries imported for cellid capture logic. Note: CellID logic in Nokia phones uses Data (small text).
 // A new dummy LocationUtil (which is part of Nokia phones) was created for project to run in Netbeans.
 import com.nokia.mid.location.LocationUtil;
-import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Displayable;
-import javax.microedition.midlet.MIDlet;
-import javax.microedition.midlet.MIDletStateChangeException;
-import javax.microedition.lcdui.Form;
-import javax.microedition.location.Coordinates;
-import javax.microedition.location.QualifiedCoordinates;
+//import javax.microedition.lcdui.Command;
+//import javax.microedition.lcdui.CommandListener;
+//import javax.microedition.lcdui.Display;
+//import javax.microedition.lcdui.Displayable;
+//import javax.microedition.midlet.MIDlet;
+//import javax.microedition.midlet.MIDletStateChangeException;
+//import javax.microedition.lcdui.Form;
+//import javax.microedition.location.Coordinates;
+import javax.microedition.location.QualifiedCoordinates; // To check if coordinates are actually qualified.
 //end of adding new libraries change.
 
 public class LocationHandler implements LocationListener {
