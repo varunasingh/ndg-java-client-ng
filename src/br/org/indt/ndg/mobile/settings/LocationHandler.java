@@ -53,18 +53,6 @@ public class LocationHandler implements LocationListener {
             locationWatch.setPriority(Thread.MIN_PRIORITY);
             locationWatch.start();  // Will call class LocationWatch.run().
         }
-        
-        //end of change.
-        
- //       try {
- //           provider = LocationProvider.getInstance(criteria);
- //           if (provider != null) {
- //               provider.setLocationListener(this, -1, -1, 0);
- //               currentState = provider.getState();
- //           }
- //       } catch (LocationException e) {
- //       } catch (SecurityException e) {
- //      }
         return currentState;
     }
 
